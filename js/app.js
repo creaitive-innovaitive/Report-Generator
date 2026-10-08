@@ -26,6 +26,7 @@ function setAllMode(mode){
 function updateS(id, field, val){
   ensureSel(id);
   selections[id][field] = +val;
+  (selections[id].touched = selections[id].touched || {})[field] = true;
   delete selections[id].custom;
   saveState(); liveUpdate(id);
 }
@@ -35,6 +36,7 @@ function updateS2(id, val){
   const [cat, idx] = val.split(':');
   selections[id].s2cat = cat;
   selections[id].s2    = +idx;
+  (selections[id].touched = selections[id].touched || {}).s2 = true;
   delete selections[id].custom;
   saveState(); liveUpdate(id);
 }

@@ -110,18 +110,19 @@ function renderComments(){
     const s2cat   = isAuto ? autoS2Cat(s) : (sel.s2cat || 's2_academic');
     const s2CatLabel = { s2_academic: 'Academic', s2_effort: 'Effort & Work Ethic', s2_behaviour: 'Behaviour' }[s2cat];
     const comment = assembleFull(s, sel);
+    const parts   = resolveParts(s, sel, currentBank());
     const len     = comment.length;
     const ccClass = len > 350 ? 'over' : len >= 330 ? 'good' : len >= 300 ? 'near' : 'low';
     const ccMsg   = len > 350 ? `⚠ ${len}/350 — too long` : `${len} / 350 chars`;
 
     const s2Opts = [
       splitOpts(currentBank()[t].s2_academic, currentBank()[t].split, sel.s2,
-        (tmpl, i) => `<option value="s2_academic:${i}"${s2cat === 's2_academic' && sel.s2 === i ? ' selected' : ''}>${renderTmpl(tmpl, dn, sn, g)}</option>`,
+        (tmpl, i) => `<option value="s2_academic:${i}"${s2cat === 's2_academic' && parts.i2 === i ? ' selected' : ''}>${renderTmpl(tmpl, dn, sn, g)}</option>`,
         ['Academic — Theory', 'Academic — Programming']),
       `<optgroup label="Effort & Work Ethic">`,
-      ...currentBank()[t].s2_effort.map((tmpl, i) => `<option value="s2_effort:${i}"${s2cat === 's2_effort' && sel.s2 === i ? ' selected' : ''}>${renderTmpl(tmpl, dn, sn, g)}</option>`),
+      ...currentBank()[t].s2_effort.map((tmpl, i) => `<option value="s2_effort:${i}"${s2cat === 's2_effort' && parts.i2 === i ? ' selected' : ''}>${renderTmpl(tmpl, dn, sn, g)}</option>`),
       `</optgroup><optgroup label="Behaviour">`,
-      ...currentBank()[t].s2_behaviour.map((tmpl, i) => `<option value="s2_behaviour:${i}"${s2cat === 's2_behaviour' && sel.s2 === i ? ' selected' : ''}>${renderTmpl(tmpl, dn, sn, g)}</option>`),
+      ...currentBank()[t].s2_behaviour.map((tmpl, i) => `<option value="s2_behaviour:${i}"${s2cat === 's2_behaviour' && parts.i2 === i ? ' selected' : ''}>${renderTmpl(tmpl, dn, sn, g)}</option>`),
       `</optgroup>`
     ].join('');
 
@@ -161,7 +162,7 @@ function renderComments(){
       <div class="s-row${isAuto ? ' auto-row' : ''}">
         <span class="s-lbl">S3 · Close${isAuto ? '<small>editable</small>' : ''}</span>
         <select class="s-sel" onchange="updateS(${s.id},'s3',this.value)">
-          ${currentBank()[t].s3.map((tmpl, i) => `<option value="${i}"${sel.s3 === i ? ' selected' : ''}>${renderTmpl(tmpl, dn, sn, g)}</option>`).join('')}
+          ${currentBank()[t].s3.map((tmpl, i) => `<option value="${i}"${parts.i3 === i ? ' selected' : ''}>${renderTmpl(tmpl, dn, sn, g)}</option>`).join('')}
         </select>
       </div>
       ${len < 330 || !isAuto ? `<div class="s-row">
