@@ -377,7 +377,12 @@ function _importAverageGrade(wb, sheetName){
   const hdr = rows[hi].map(c => String(c).trim());
   const aveCol   = hdr.findIndex(c => /^ave/i.test(c));
   const gradeCol = hdr.findIndex(c => /^grade$/i.test(c));
-  const nameCol  = hdr.findIndex(c => c !== '') - 1;
+  // Name column = whichever column left of "Ave" holds the most text in graded rows
+  let nameCol = 0, best = -1;
+  for(let c = 0; c < aveCol; c++){
+    const n = rows.slice(hi + 1).filter(r => String(r[gradeCol] || '').trim() && String(r[c] || '').trim() && isNaN(parseFloat(r[c]))).length;
+    if(n > best){ best = n; nameCol = c; }
+  }
   let added = 0, skipped = 0;
   for(let i = hi + 1; i < rows.length; i++){
     const name  = String(rows[i][nameCol] || '').trim();
