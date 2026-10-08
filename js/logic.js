@@ -75,10 +75,26 @@ function resolveParts(s, sel, bank){
 
   const s2cat = isAuto ? autoS2Cat(s) : (sel.s2cat || 's2_academic');
   const p1 = r(bank[t].s1[sel.s1 || 0]);
-  const i2 = (isAuto && !touched.s2) ? leastRepeated(bank[t][s2cat], p1, names, r) : (sel.s2 || 0);
-  const p2 = r(bank[t][s2cat][i2]);
-  const i3 = (isAuto && !touched.s3) ? leastRepeated(bank[t].s3, `${p1} ${p2}`, names, r) : (sel.s3 || 0);
-  const p3 = r(bank[t].s3[i3]);
+  const L2 = bank[t][s2cat].map(r), L3 = bank[t].s3.map(r), L4 = bank[t].s4.map(r);
+
+  // Untouched S2/S3 in auto mode: search the combinations for the least repetition (and a length within 350)
+  const idx2 = (isAuto && !touched.s2) ? L2.map((_, i) => i) : [sel.s2 || 0];
+  const idx3 = (isAuto && !touched.s3) ? L3.map((_, i) => i) : [sel.s3 || 0];
+  let i2 = idx2[0], i3 = idx3[0], bestScore = Infinity;
+  if(idx2.length > 1 || idx3.length > 1){
+    idx2.forEach(a => idx3.forEach(b => {
+      const len = p1.length + L2[a].length + L3[b].length + 2;
+      let sc = overlapScore(p1, L2[a], names) + overlapScore(`${p1} ${L2[a]}`, L3[b], names)
+             + (len > 350 ? 1000 : 0);
+      if(len < 300){ // a padding sentence will be added, so count its repetition too
+        const text = `${p1} ${L2[a]} ${L3[b]}`;
+        const fits = L4.filter(x => len + 1 + x.length <= 350).map(x => overlapScore(text, x, names));
+        if(fits.length) sc += Math.min(...fits);
+      }
+      if(sc < bestScore){ bestScore = sc; i2 = a; i3 = b; }
+    }));
+  }
+  const p2 = L2[i2], p3 = L3[i3];
   return { t, dn, sn, g, isAuto, s2cat, p1, p2, p3, i2, i3, names, r };
 }
 
