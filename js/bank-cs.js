@@ -49,7 +49,7 @@ const BANK_CS = {
       "An outstanding effort — [SHORT_NAME] should feel very proud of this achievement."
     ],
     s4:[
-      "Well done, [SHORT_NAME] — this has been a truly superb term.",
+      "This has been a truly superb term for [SHORT_NAME].",
       "I am very proud of [SHORT_NAME]'s commitment and achievements this term.",
       "[SHORT_NAME] should feel very proud of what has been achieved this term.",
       "This outstanding effort reflects exactly the right attitude towards learning."
@@ -99,12 +99,12 @@ const BANK_CS = {
       "With focused revision, [SHORT_NAME] is well-placed to push into the top grade boundary.",
       "Consistent practice and targeted revision will help [SHORT_NAME] achieve an A grade.",
       "A positive term — continued effort will lead to strong improvement in final exams.",
-      "The A grade is within reach — keep pushing and address identified gaps systematically.",
+      "The A grade is within reach if identified gaps are addressed systematically.",
       "Maintaining this effort and building on strengths will ensure continued improvement."
     ],
     s4:[
-      "A positive term overall — keep it up, [SHORT_NAME].",
-      "Keep pushing, [SHORT_NAME] — the top grade is well within your reach.",
+      "A positive term overall, and [SHORT_NAME] should aim to maintain this momentum.",
+      "With continued effort, the top grade is well within [SHORT_NAME]'s reach.",
       "I look forward to seeing [SHORT_NAME] build further on this solid foundation.",
       "With continued focus, [SHORT_NAME] has every chance of a strong final result."
     ]
