@@ -80,6 +80,8 @@ function renameClass(i){
 
 function pushStudent(fullName, nickname, grade, percent, progress, effort, behaviour, gender){
   const id = nextId++;
+  // Vietnamese names always use the given-name rule, so bracketed nicknames are dropped
+  if(isViet(fullName)) nickname = '';
   students.push({
     id, fullName,
     nickname:  nickname  || '',
@@ -129,8 +131,8 @@ function setName(id, field, val){
     if(!val){ renderAll(); return; }
     const p = parseBracketed(val);
     s.fullName = p.fullName;
-    if(p.nickname) s.nickname = p.nickname;
     s.viet   = isViet(s.fullName);
+    if(p.nickname && !s.viet) s.nickname = p.nickname;
     s.jap    = !s.viet && isJapanese(s.fullName);
     s.korean = !s.viet && !s.jap && isKorean(s.fullName);
   } else {
