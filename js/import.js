@@ -362,7 +362,7 @@ function _importWorkbook(wb, sheetName, sourceName){
   saveState(); renderAll();
 }
 
-const AVG_SHEET = /average\s*grade/i;
+const AVG_SHEET = /av\w*ge\s*grade/i; // tolerates typos like "Avrage Grades"
 
 // Sheets worth importing: a tracking workbook's "Average Grade" tab wins outright.
 function dataSheetsOf(wb){
@@ -397,7 +397,7 @@ function _importAverageGrade(wb, sheetName){
 
   const tables = [];
   rows.forEach((row, r) => row.forEach((cell, c) => {
-    if(!/^ave/i.test(String(cell).trim())) return;
+    if(!/^(ave|final)/i.test(String(cell).trim())) return;
     for(let g = c + 1; g <= c + 3; g++){
       if(/^grade$/i.test(str(r, g))){ tables.push({ hdr: r, ave: c, grade: g }); break; }
     }
@@ -405,33 +405,36 @@ function _importAverageGrade(wb, sheetName){
   if(!tables.length) return [0, 0];
 
   tables.forEach(t => {
+    t.end = Math.min(...tables.filter(o => o.hdr > t.hdr).map(o => o.hdr), rows.length);
+    // Name column = whichever column left of "Ave" holds the most text in graded rows
+    let best = -1; t.name = 0;
+    for(let c = 0; c < t.ave; c++){
+      let n = 0;
+      for(let r = t.hdr + 1; r < t.end; r++)
+        if(str(r, t.grade) && str(r, c) && isNaN(parseFloat(str(r, c)))) n++;
+      if(n > best){ best = n; t.name = c; }
+    }
+    // Period titles sit above/at the table's own name column or on its Ave header (score 2);
+    // matches elsewhere in range may belong to a neighbouring table (score 1).
     t.titles = [];
     for(let r = Math.max(0, t.hdr - 3); r <= t.hdr; r++)
-      for(let c = Math.max(0, t.ave - 6); c <= t.grade; c++)
-        if(str(r, c)) t.titles.push(str(r, c));
+      for(let c = t.name; c <= t.grade; c++)
+        if(str(r, c)) t.titles.push({ text: str(r, c), own: c === t.name || (r === t.hdr && c === t.ave) });
   });
 
   const pat = PERIOD_PATTERNS[importPeriod];
-  let table = pat && tables.find(t => t.titles.some(x => pat.test(x)));
+  const score = t => pat ? Math.max(0, ...t.titles.filter(x => pat.test(x.text)).map(x => x.own ? 2 : 1)) : 0;
+  let table = tables.filter(t => score(t) > 0).sort((x, y) => score(y) - score(x))[0];
   if(!table){
-    const labelled = tables.some(t => t.titles.some(x => /term|sem/i.test(x)));
+    const labelled = tables.some(t => t.titles.some(x => /term|sem/i.test(x.text)));
     if(labelled){
-      const found = [...new Set(tables.flatMap(t => t.titles.filter(x => /term|sem/i.test(x))))].join(', ');
+      const found = [...new Set(tables.flatMap(t => t.titles.filter(x => x.own && /term|sem/i.test(x.text)).map(x => x.text)))].join(', ');
       alert(`Couldn't find a "${importPeriod}" table on the "${sheetName}" tab.\n\nTables found: ${found}`);
       return [0, 0];
     }
     table = tables[0]; // unlabelled single-table sheet
   }
-
-  const end = Math.min(...tables.filter(t => t.hdr > table.hdr).map(t => t.hdr), rows.length);
-  // Name column = whichever column left of "Ave" holds the most text in graded rows
-  let nameCol = 0, best = -1;
-  for(let c = 0; c < table.ave; c++){
-    let n = 0;
-    for(let r = table.hdr + 1; r < end; r++)
-      if(str(r, table.grade) && str(r, c) && isNaN(parseFloat(str(r, c)))) n++;
-    if(n > best){ best = n; nameCol = c; }
-  }
+  const end = table.end, nameCol = table.name;
 
   let added = 0, skipped = 0, noGrade = 0;
   for(let r = table.hdr + 1; r < end; r++){
