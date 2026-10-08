@@ -1,9 +1,9 @@
-// Comment bank for IGCSE Computer Science. Same structure as bank.js.
+// Comment bank for Computer Science. Same structure as bank.js.
 
 const BANK_CS = {
   A: {
     s1:[
-      "[FULL_NAME] has delivered an outstanding performance in IGCSE Computer Science this term.",
+      "[FULL_NAME] has delivered an outstanding performance in Computer Science this term.",
       "[FULL_NAME] has excelled this term, showing exceptional problem-solving ability in Computer Science.",
       "[FULL_NAME] has produced exemplary work in both theory and programming throughout this term.",
       "[FULL_NAME] consistently demonstrates a brilliant grasp of computational thinking and programming.",
@@ -46,7 +46,7 @@ const BANK_CS = {
   },
   B: {
     s1:[
-      "[FULL_NAME] has shown solid progress in IGCSE Computer Science and a good grasp of core concepts.",
+      "[FULL_NAME] has shown solid progress in Computer Science and a good grasp of core concepts.",
       "[FULL_NAME] has worked consistently well this term, achieving a sound standard throughout.",
       "[FULL_NAME] demonstrates a reliable understanding of key programming and theory topics.",
       "[FULL_NAME] has made good progress and engages positively with computing topics this term.",
@@ -89,7 +89,7 @@ const BANK_CS = {
   },
   C: {
     s1:[
-      "[FULL_NAME] has worked to establish a foundational understanding of IGCSE Computer Science this term.",
+      "[FULL_NAME] has worked to establish a foundational understanding of Computer Science this term.",
       "[FULL_NAME] shows some engagement with core computing topics and a cooperative class attitude.",
       "[FULL_NAME] has contributed positively to class and is beginning to develop programming skills.",
       "[FULL_NAME] demonstrates a growing grasp of fundamental computing concepts across key topics.",

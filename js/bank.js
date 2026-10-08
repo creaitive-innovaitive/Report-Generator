@@ -1,4 +1,4 @@
-// Comment bank for IGCSE Economics (see bank-cs.js for Computer Science).
+// Comment bank for Economics (see bank-cs.js for Computer Science).
 // Structure: BANK[tier] where tier is 'A', 'B', or 'C'.
 // Each tier has: s1 (opening), s2_academic, s2_effort, s2_behaviour, s3 (close), s4 (padding).
 // Placeholders: [FULL_NAME], [SHORT_NAME], [THEIR], [THEM], [THEY]
@@ -7,9 +7,9 @@
 const BANK = {
   A: {
     s1:[
-      "[FULL_NAME] has delivered an outstanding performance in IGCSE Economics this term.",
+      "[FULL_NAME] has delivered an outstanding performance in Economics this term.",
       "[FULL_NAME] has excelled this term, demonstrating exceptional analytical ability in Economics.",
-      "[FULL_NAME] has produced exemplary work in IGCSE Economics throughout this term.",
+      "[FULL_NAME] has produced exemplary work in Economics throughout this term.",
       "[FULL_NAME] consistently demonstrates brilliant insight into economic theory and practice.",
       "[FULL_NAME] has been a standout student, achieving an excellent standard across all units."
     ],
@@ -50,7 +50,7 @@ const BANK = {
   },
   B: {
     s1:[
-      "[FULL_NAME] has shown solid progress in IGCSE Economics and a good grasp of core concepts.",
+      "[FULL_NAME] has shown solid progress in Economics and a good grasp of core concepts.",
       "[FULL_NAME] has worked consistently well this term, achieving a sound standard throughout.",
       "[FULL_NAME] demonstrates a reliable understanding of key economic principles and models.",
       "[FULL_NAME] has made good progress and engages positively with economic topics this term.",
@@ -93,7 +93,7 @@ const BANK = {
   },
   C: {
     s1:[
-      "[FULL_NAME] has worked to establish a foundational understanding of IGCSE Economics this term.",
+      "[FULL_NAME] has worked to establish a foundational understanding of Economics this term.",
       "[FULL_NAME] shows some engagement with core economic topics and a cooperative class attitude.",
       "[FULL_NAME] has contributed positively to class and is beginning to develop economic awareness.",
       "[FULL_NAME] demonstrates a growing grasp of fundamental economic concepts across key topics.",
