@@ -11,19 +11,54 @@ function setRosterLabel(name){
   if(el) el.textContent = name ? `Current Roster — ${name}` : 'Current Roster';
 }
 
+// Five switchable classes, each with its own students and comment selections.
+const CLASSES_KEY = 'betr_classes';
+const CLASS_COUNT = 5;
+let classes = [];
+let activeClass = 0;
+
 function loadState(){
   try {
-    const ss = localStorage.getItem('igcse_s2');
-    const se = localStorage.getItem('igcse_sel2');
-    if(ss) students   = JSON.parse(ss);
-    if(se) selections = JSON.parse(se);
-    if(students.length) nextId = Math.max(...students.map(x => x.id)) + 1;
+    const raw = JSON.parse(localStorage.getItem(CLASSES_KEY));
+    if(raw && raw.classes && raw.classes.length === CLASS_COUNT){
+      classes = raw.classes; activeClass = raw.active || 0;
+    }
   } catch(e) {}
+  if(!classes.length){
+    // First run with classes: existing roster becomes Class 1.
+    let ss = [], se = {};
+    try {
+      ss = JSON.parse(localStorage.getItem('igcse_s2')) || [];
+      se = JSON.parse(localStorage.getItem('igcse_sel2')) || {};
+    } catch(e) {}
+    classes = Array.from({ length: CLASS_COUNT }, (_, i) => ({ name: `Class ${i + 1}`, students: [], selections: {} }));
+    classes[0].students = ss; classes[0].selections = se;
+    activeClass = 0;
+  }
+  students   = classes[activeClass].students;
+  selections = classes[activeClass].selections;
+  nextId = students.length ? Math.max(...students.map(x => x.id)) + 1 : 1;
 }
 
 function saveState(){
-  localStorage.setItem('igcse_s2',   JSON.stringify(students));
-  localStorage.setItem('igcse_sel2', JSON.stringify(selections));
+  classes[activeClass].students   = students;
+  classes[activeClass].selections = selections;
+  localStorage.setItem(CLASSES_KEY, JSON.stringify({ active: activeClass, classes }));
+}
+
+function switchClass(i){
+  saveState();
+  activeClass = i;
+  students   = classes[i].students;
+  selections = classes[i].selections;
+  nextId = students.length ? Math.max(...students.map(x => x.id)) + 1 : 1;
+  saveState();
+  renderAll();
+}
+
+function renameClass(i){
+  const n = prompt('Class name:', classes[i].name);
+  if(n && n.trim()){ classes[i].name = n.trim(); saveState(); renderAll(); }
 }
 
 function pushStudent(fullName, nickname, grade, percent, progress, effort, behaviour, gender){

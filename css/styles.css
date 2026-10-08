@@ -124,3 +124,10 @@ select.s-sel{font-size:.78rem;width:100%}
 .pr-report-title{font-weight:600;font-size:.9rem;color:var(--text)}
 .pr-report-meta{font-size:.75rem;color:var(--muted);margin-left:.5rem}
 .pr-comments{border-top:1px solid var(--border);padding:1rem;background:#f8fafc}
+
+.class-tabs{display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:.75rem;align-items:center}
+.class-tab{background:#fff;border:1px solid var(--border);color:var(--text);padding:.42rem .9rem;border-radius:6px;cursor:pointer;font-size:.875rem;font-weight:600}
+.class-tab:hover{border-color:var(--primary)}
+.class-tab.active{background:var(--primary);border-color:var(--primary);color:#fff}
+.class-n{font-size:.72rem;opacity:.75;margin-left:.2rem}
+.class-tab-edit{background:none;border:none;cursor:pointer;font-size:.85rem}

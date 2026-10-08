@@ -172,8 +172,8 @@ function buildReportList(reports){
     return `<div class="pr-report-card">
       <div class="pr-report-hdr">
         <div>
-          <span class="pr-report-title">${r.subject} · ${r.yearLevel}</span>
-          <span class="pr-report-meta">${dateStr} at ${timeStr} · ${r.studentCount} student${r.studentCount !== 1 ? 's' : ''}</span>
+          <span class="pr-report-title">${r.name ? prEscHtml(r.name) : `${r.subject} · ${r.yearLevel}`}</span>
+          <span class="pr-report-meta">${r.name ? `${r.subject} · ${r.yearLevel} · ` : ''}${r.className ? `${prEscHtml(r.className)} · ` : ''}${dateStr} at ${timeStr} · ${r.studentCount} student${r.studentCount !== 1 ? 's' : ''}</span>
         </div>
         <div style="display:flex;gap:.4rem;flex-wrap:wrap">
           <button class="btn btn-ghost btn-sm" onclick="prToggle('${r.id}')">${isOpen ? '▲ Hide' : '▼ View'}</button>
@@ -312,3 +312,5 @@ function prDownloadReport(id){
   a.click();
   setTimeout(() => URL.revokeObjectURL(a.href), 10000);
 }
+
+function prEscHtml(t){ return String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }

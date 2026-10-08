@@ -1,6 +1,15 @@
 // DOM rendering for all three tabs.
 
+function renderClassTabs(){
+  const el = document.getElementById('class-tabs');
+  if(!el) return;
+  el.innerHTML = classes.map((c, i) =>
+    `<button class="class-tab${i === activeClass ? ' active' : ''}" onclick="switchClass(${i})" ondblclick="renameClass(${i})" title="Double-click to rename">${c.name}${c.students.length ? ` <span class="class-n">${c.students.length}</span>` : ''}</button>`
+  ).join('') + `<button class="class-tab-edit" onclick="renameClass(activeClass)" title="Rename this class">✏️</button>`;
+}
+
 function renderAll(){
+  renderClassTabs();
   document.getElementById('s-count').textContent = students.length;
   renderRoster();
   renderComments();

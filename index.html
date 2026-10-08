@@ -25,6 +25,7 @@
 <!-- TAB 1 · Students -->
 <div id="pane-students" class="pane active">
 
+  <div id="class-tabs" class="class-tabs"></div>
   <div class="roster-toolbar">
     <div id="roster-label" class="roster-label">Current Roster</div>
     <button class="btn btn-new-roster" onclick="newRoster()">+ New Roster</button>
@@ -262,6 +263,10 @@
   <div class="modal-box">
     <div class="modal-title">💾 Save Report</div>
     <div class="modal-fields">
+      <div class="fg" style="grid-column:1/-1">
+        <label>Name (optional)</label>
+        <input id="m-name" type="text" placeholder="e.g. Mock exam draft, Final version"/>
+      </div>
       <div class="fg">
         <label>Period</label>
         <select id="m-term">

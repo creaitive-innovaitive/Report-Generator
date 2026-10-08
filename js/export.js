@@ -188,6 +188,7 @@ function openSaveModal(){
   ).join('');
 
   document.getElementById('m-term').value = 'Term 1';
+  document.getElementById('m-name').value = '';
   document.getElementById('save-modal').style.display = 'flex';
   document.getElementById('m-year').focus();
 }
@@ -202,7 +203,9 @@ function confirmSave(){
     academicYear: document.getElementById('m-year').value,
     yearLevel:    document.getElementById('m-level').value,
     subject:      document.getElementById('m-subject').value,
-    term:         document.getElementById('m-term').value.trim()
+    term:         document.getElementById('m-term').value.trim(),
+    name:         document.getElementById('m-name').value.trim(),
+    className:    classes[activeClass].name
   };
   if(!meta.academicYear || !meta.term || !meta.yearLevel || !meta.subject){
     alert('Please fill in all fields.');

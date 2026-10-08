@@ -42,6 +42,8 @@ function saveReport(meta){
     academicYear: meta.academicYear,
     yearLevel:    meta.yearLevel,
     subject:      meta.subject,
+    name:         meta.name || '',
+    className:    meta.className || '',
     term:         meta.term || '',
     studentCount: students.length,
     students:     JSON.parse(JSON.stringify(students)),
