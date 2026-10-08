@@ -207,10 +207,14 @@ async function importFromGoogleSheets(){
 
   // Extract the spreadsheet ID from any Google Sheets URL format
   const match = url.match(/\/spreadsheets\/d\/([a-zA-Z0-9-_]+)/);
+  if(!match && /drive\.google\.com\/file\/d\//.test(url)){
+    alert('That link is an Excel file stored in Drive, which the browser can\'t fetch.\n\nEither download it and use Step 2 (upload), or open it in Drive and choose File → Save as Google Sheets, then paste that link.');
+    return;
+  }
   if(!match){ alert('That doesn\'t look like a Google Sheets link.\n\nPaste the full URL from your browser address bar, e.g.\nhttps://docs.google.com/spreadsheets/d/abc123/edit'); return; }
 
   const id     = match[1];
-  const csvUrl = `https://docs.google.com/spreadsheets/d/${id}/export?format=csv`;
+  const csvUrl = `https://docs.google.com/spreadsheets/d/${id}/export?format=xlsx`;
 
   const btn = document.getElementById('gs-btn');
   if(btn){ btn.textContent = 'Importing…'; btn.disabled = true; }
@@ -218,9 +222,8 @@ async function importFromGoogleSheets(){
   try {
     const res = await fetch(csvUrl);
     if(!res.ok) throw new Error(`HTTP ${res.status}`);
-    const text = await res.text();
-    // Parse CSV via SheetJS then hand off to the shared import logic
-    const wb   = XLSX.read(text, { type: 'string' });
+    // xlsx export keeps every tab (csv only returns the first, which misses "Average Grade")
+    const wb   = XLSX.read(await res.arrayBuffer(), { type: 'array' });
     const dataSheets = dataSheetsOf(wb);
     if(dataSheets.length > 1){
       _pendingWb = wb;
@@ -230,7 +233,7 @@ async function importFromGoogleSheets(){
     }
     if(input) input.value = '';
   } catch(err){
-    alert('Could not fetch the sheet.\n\nMake sure:\n• The sheet is shared as "Anyone with the link can view"\n• You copied the full URL from the browser address bar');
+    alert('Could not fetch the sheet.\n\nMake sure:\n• It is a native Google Sheet (an uploaded .xlsx shows ".xlsx" in the title — use File → Save as Google Sheets, or just download it and use Step 2)\n• It is shared as "Anyone with the link can view"\n• You copied the full URL from the address bar');
   } finally {
     if(btn){ btn.textContent = 'Import'; btn.disabled = false; }
   }
