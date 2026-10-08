@@ -38,6 +38,7 @@ function autoS2Cat(s){
 }
 
 function assembleFull(s, sel){
+  if(sel.mode === 'manual' && sel.custom) return sel.custom; // hand-edited text wins
   const t  = tier(s.grade);
   const dn = displayName(s);
   const sn = shortName(s);

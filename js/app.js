@@ -26,6 +26,7 @@ function setAllMode(mode){
 function updateS(id, field, val){
   ensureSel(id);
   selections[id][field] = +val;
+  delete selections[id].custom;
   saveState(); liveUpdate(id);
 }
 
@@ -34,7 +35,27 @@ function updateS2(id, val){
   const [cat, idx] = val.split(':');
   selections[id].s2cat = cat;
   selections[id].s2    = +idx;
+  delete selections[id].custom;
   saveState(); liveUpdate(id);
+}
+
+function editComment(id, text){
+  ensureSel(id);
+  selections[id].custom = text;
+  saveState();
+  const len = text.length;
+  const cnt = document.getElementById(`cc-${id}`);
+  if(cnt){
+    cnt.textContent = len > 350 ? `⚠ ${len}/350 — too long` : `${len} / 350 chars`;
+    cnt.className = `cc ${len > 350 ? 'over' : len >= 330 ? 'good' : len >= 300 ? 'near' : 'low'}`;
+  }
+  renderExport();
+}
+
+function resetComment(id){
+  ensureSel(id);
+  delete selections[id].custom;
+  saveState(); renderComments(); renderExport();
 }
 
 function newRoster(){

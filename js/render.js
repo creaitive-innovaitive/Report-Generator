@@ -158,9 +158,12 @@ function renderComments(){
         <span class="s-lbl">S4 · Extra<small>padding sentence</small></span>
         <select class="s-sel" onchange="updateS(${s.id},'s4',this.value)">${s4Opts}</select>
       </div>` : ''}
-      <div class="preview" id="prev-${s.id}">${comment}</div>
+      ${isAuto
+        ? `<div class="preview" id="prev-${s.id}">${comment}</div>`
+        : `<textarea class="preview preview-edit" id="prev-${s.id}" rows="5" oninput="editComment(${s.id},this.value)">${comment.replace(/&/g, '&amp;').replace(/</g, '&lt;')}</textarea>`}
       <div class="sc-foot">
         <span class="cc ${ccClass}" id="cc-${s.id}">${ccMsg}</span>
+        ${!isAuto && sel.custom ? `<button class="btn btn-ghost btn-sm" onclick="resetComment(${s.id})">↺ Reset to generated</button>` : ''}
         <button class="btn btn-ghost btn-sm" onclick="copyOne(${s.id})">📋 Copy</button>
       </div>
     </div>`;
@@ -201,7 +204,7 @@ function liveUpdate(id){
   const ccClass = len > 350 ? 'over' : len >= 330 ? 'good' : len >= 300 ? 'near' : 'low';
   const prev    = document.getElementById(`prev-${id}`);
   const cnt     = document.getElementById(`cc-${id}`);
-  if(prev) prev.textContent = comment;
+  if(prev) prev[prev.tagName === 'TEXTAREA' ? 'value' : 'textContent'] = comment;
   if(cnt){ cnt.textContent = len > 350 ? `⚠ ${len}/350 — too long` : `${len} / 350 chars`; cnt.className = `cc ${ccClass}`; }
   renderExport();
 }

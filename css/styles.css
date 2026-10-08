@@ -136,3 +136,5 @@ select.s-sel{font-size:.78rem;width:100%}
 .period-btn.active{background:var(--primary);border-color:var(--primary);color:#fff}
 
 .class-subject{margin-left:auto;font-size:.82rem}
+
+.preview-edit{width:100%;font-family:inherit;resize:vertical;box-sizing:border-box}
