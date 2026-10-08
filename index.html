@@ -28,6 +28,7 @@
   <div class="roster-toolbar">
     <div id="roster-label" class="roster-label">Current Roster</div>
     <button class="btn btn-new-roster" onclick="newRoster()">+ New Roster</button>
+    <button class="btn btn-new-roster" onclick="archiveAndStartNext()">📦 Archive &amp; Start Next</button>
   </div>
 
   <div class="card">
@@ -44,7 +45,7 @@
       <div class="fg">
         <label>Grade</label>
         <select id="i-grade">
-          <option>A*</option><option>A</option><option>B</option><option>C</option><option>D</option><option>E</option><option>F</option><option>G</option>
+          <option value="">—</option><option>A*</option><option>A</option><option>B</option><option>C</option><option>D</option><option>E</option><option>F</option><option>G</option>
         </select>
       </div>
       <div class="fg" style="width:65px">

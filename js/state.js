@@ -31,9 +31,9 @@ function pushStudent(fullName, nickname, grade, percent, progress, effort, behav
   students.push({
     id, fullName,
     nickname:  nickname  || '',
-    grade:     grade     || 'C',
+    grade:     grade     || '',
     percent:   parseFloat(percent) || 0,
-    progress:  progress  || '',
+    progress:  progress  || progressForGrade(grade),
     effort:    effort    || '',
     behaviour: behaviour || '',
     gender:    gender    || '',
@@ -49,6 +49,23 @@ function pushStudent(fullName, nickname, grade, percent, progress, effort, behav
 function setGender(id, g){
   const s = students.find(x => x.id === id);
   if(s){ s.gender = g; saveState(); renderAll(); }
+}
+
+function setField(id, field, val){
+  const s = students.find(x => x.id === id);
+  if(!s) return;
+  if(field === 'percent'){ s.percent = parseFloat(val) || 0; saveState(); return; }
+  s[field] = val;
+  if(field === 'grade') s.progress = progressForGrade(val);
+  saveState(); renderAll();
+}
+
+// Keeps names/gender, blanks everything entered per report period.
+function blankForNextReport(){
+  students.forEach(s => { s.grade = ''; s.percent = 0; s.progress = ''; s.effort = ''; s.behaviour = ''; });
+  selections = {};
+  students.forEach(s => { selections[s.id] = { mode: 'auto', s1: 0, s2cat: 's2_academic', s2: 0, s3: 0, s4: -1 }; });
+  saveState(); renderAll();
 }
 
 function delStudent(id){

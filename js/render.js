@@ -22,6 +22,12 @@ function nameTypeTag(s){
   return '<span style="color:var(--muted);font-size:.72rem">International</span>';
 }
 
+function rateSel(id, field, val){
+  const opts = ['Very Good', 'Good', 'Satisfactory', 'Needs Improvement']
+    .map(o => `<option${o === val ? ' selected' : ''}>${o}</option>`).join('');
+  return `<select class="s-sel" onchange="setField(${id},'${field}',this.value)"><option value="">—</option>${opts}</select>`;
+}
+
 function renderRoster(){
   const w = document.getElementById('roster-wrap');
   if(!students.length){
@@ -54,11 +60,11 @@ function renderRoster(){
       <td><strong>${s.fullName}</strong>${s.nickname ? ` <span style="color:var(--muted);font-size:.75rem">(${s.nickname})</span>` : ''}</td>
       <td><span class="tag-short">${sn}</span></td>
       <td><div style="display:flex;align-items:center;gap:.2rem">${genderBtns}</div></td>
-      <td><span class="badge b${t}">${s.grade}</span></td>
-      <td>${s.percent || '—'}</td>
-      <td><span class="${pebClass(s.progress)}">${s.progress || '—'}</span></td>
-      <td><span class="${pebClass(s.effort)}">${s.effort || '—'}</span></td>
-      <td><span class="${pebClass(s.behaviour)}">${s.behaviour || '—'}</span></td>
+      <td><select class="s-sel" style="width:64px" onchange="setField(${s.id},'grade',this.value)"><option value="">—</option>${['A*','A','B','C','D','E','F','G'].map(g => `<option${g === s.grade ? ' selected' : ''}>${g}</option>`).join('')}</select></td>
+      <td><input type="number" min="0" max="100" style="width:64px" value="${s.percent || ''}" onchange="setField(${s.id},'percent',this.value)"/></td>
+      <td>${rateSel(s.id, 'progress', s.progress)}</td>
+      <td>${rateSel(s.id, 'effort', s.effort)}</td>
+      <td>${rateSel(s.id, 'behaviour', s.behaviour)}</td>
       <td>${nameTypeTag(s)}</td>
       <td><button class="btn btn-red btn-sm" onclick="delStudent(${s.id})">✕</button></td>
     </tr>`;

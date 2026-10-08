@@ -163,6 +163,13 @@ const _confirmDownloadBase = confirmDownload;
 
 // ── Save Report Modal ─────────────────────────────────────────────────────────
 
+let blankAfterSave = false;
+
+function archiveAndStartNext(){
+  blankAfterSave = true;
+  openSaveModal();
+}
+
 function openSaveModal(){
   if(!students.length){ alert('No students to save.'); return; }
 
@@ -186,6 +193,7 @@ function openSaveModal(){
 }
 
 function closeSaveModal(){
+  blankAfterSave = false;
   document.getElementById('save-modal').style.display = 'none';
 }
 
@@ -201,7 +209,9 @@ function confirmSave(){
     return;
   }
   saveReport(meta);
+  const blank = blankAfterSave;
   closeSaveModal();
+  if(blank) blankForNextReport();
 
   const btn = document.getElementById('btn-save-report');
   if(btn){ const o = btn.textContent; btn.textContent = '✅ Saved!'; setTimeout(() => btn.textContent = o, 2000); }

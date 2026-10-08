@@ -10,6 +10,16 @@ function tier(grade){
   return 'C'; // C, D, E, F, G all use the C-tier comment bank
 }
 
+// Grade -> default progress rating
+function progressForGrade(grade){
+  const g = (grade || '').toString().trim().toUpperCase();
+  if(!g) return '';
+  if(g === 'A*' || g === 'A+' || g === 'A') return 'Very Good';
+  if(g === 'B') return 'Good';
+  if(g === 'C') return 'Satisfactory';
+  return 'Needs Improvement'; // D-G
+}
+
 function renderTmpl(t, dn, sn, gender){
   const g = gender || '';
   return t

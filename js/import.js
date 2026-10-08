@@ -392,7 +392,7 @@ function _importSheet(wb, sheetName){
     const beh    = normalise(get('behaviour','behavior'));
     const rawG   = get('gender','sex');
     const gender = rawG ? (/^f/i.test(rawG) ? 'F' : 'M') : '';
-    if(parsed.fullName){ pushStudent(parsed.fullName, nick, grade||'C', pct, prog, eff, beh, gender); added++; }
+    if(parsed.fullName){ pushStudent(parsed.fullName, nick, grade, pct, prog, eff, beh, gender); added++; }
     else skipped++;
   });
   return [added, skipped];
