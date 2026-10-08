@@ -18,7 +18,8 @@ const CLASS_COUNT = 5;
 const SUBJECT_BANKS = { 'Economics': () => BANK, 'Computer Science': () => BANK_CS };
 function guessSubject(name){ return /computer|\bcs\b/i.test(name || '') ? 'Computer Science' : 'Economics'; }
 function currentSubject(){ return classes[activeClass].subject || guessSubject(classes[activeClass].name); }
-function currentBank(){ return (SUBJECT_BANKS[currentSubject()] || SUBJECT_BANKS['Economics'])(); }
+function bankFor(sub){ return (SUBJECT_BANKS[sub] || SUBJECT_BANKS['Economics'])(); }
+function currentBank(){ return bankFor(currentSubject()); }
 function setClassSubject(sub){ classes[activeClass].subject = sub; saveState(); renderAll(); }
 
 let classes = [];

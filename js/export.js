@@ -72,34 +72,56 @@ function _doDownloadExcel(filename){
 
 // ── Download Word ─────────────────────────────────────────────────────────────
 
-function _doDownloadWord(filename){
-  const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+// Builds a real .docx (zip of WordprocessingML) with JSZip.
+// entries: [{ name, meta, comment }]
+async function downloadDocx(filename, entries){
+  const xs = t => String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  const run = (text, props = '') => `<w:r><w:rPr>${props}</w:rPr><w:t xml:space="preserve">${xs(text)}</w:t></w:r>`;
+  const body = entries.map(e =>
+    `<w:p><w:pPr><w:keepNext/><w:spacing w:before="240" w:after="40"/></w:pPr>${run(e.name, '<w:b/>')}` +
+    (e.meta ? run(` (${e.meta})`, '<w:color w:val="888888"/>') : '') + `</w:p>` +
+    `<w:p><w:pPr><w:spacing w:after="120"/></w:pPr>${run(e.comment)}</w:p>`
+  ).join('');
 
-  let body = '';
-  students.forEach((s, i) => {
-    const sel     = selections[s.id] || { mode: 'auto', s1: 0, s2cat: 's2_academic', s2: 0, s3: 0, s4: -1 };
-    const dn      = displayName(s);
-    const comment = assembleFull(s, sel);
-    const meta    = [s.grade, s.percent ? s.percent + '%' : ''].filter(Boolean).join(' · ');
-    if(i > 0) body += '<p>&nbsp;</p>';
-    body += `<p><b>${esc(dn)}</b> <span style="color:#888">(${esc(meta)})</span></p>`;
-    body += `<p>${esc(comment)}</p>`;
+  const NS = 'http://schemas.openxmlformats.org/wordprocessingml/2006/main';
+  const zip = new JSZip();
+  const put = (name, data) => zip.file(name, data, { createFolders: false });
+  put('[Content_Types].xml', `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/><Override PartName="/word/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml"/></Types>`);
+  put('_rels/.rels', `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/></Relationships>`);
+  put('word/_rels/document.xml.rels', `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/></Relationships>`);
+  put('word/styles.xml', `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<w:styles xmlns:w="${NS}"><w:docDefaults><w:rPrDefault><w:rPr><w:rFonts w:ascii="Calibri" w:hAnsi="Calibri" w:cs="Calibri"/><w:sz w:val="22"/></w:rPr></w:rPrDefault><w:pPrDefault><w:pPr><w:spacing w:line="360" w:lineRule="auto"/></w:pPr></w:pPrDefault></w:docDefaults></w:styles>`);
+  put('word/document.xml', `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<w:document xmlns:w="${NS}"><w:body>${body}<w:sectPr><w:pgSz w:w="11906" w:h="16838"/><w:pgMar w:top="1134" w:right="1134" w:bottom="1134" w:left="1134" w:header="708" w:footer="708" w:gutter="0"/></w:sectPr></w:body></w:document>`);
+
+  const blob = await zip.generateAsync({
+    type: 'blob',
+    mimeType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    compression: 'DEFLATE'
   });
-
-  const html = `<html xmlns:o="urn:schemas-microsoft-com:office:office"
-    xmlns:w="urn:schemas-microsoft-com:office:word"
-    xmlns="http://www.w3.org/TR/REC-html40">
-  <head><meta charset="utf-8">
-  <style>body{font-family:Calibri,sans-serif;font-size:11pt;line-height:1.5}</style>
-  </head><body>${body}</body></html>`;
-
-  const blob = new Blob([html], { type: 'application/msword' });
   const a = Object.assign(document.createElement('a'), {
-    href:     URL.createObjectURL(blob),
-    download: filename + '.doc'
+    href: URL.createObjectURL(blob), download: filename + '.docx'
   });
   a.click();
   setTimeout(() => URL.revokeObjectURL(a.href), 10000);
+}
+
+function wordEntries(list, sels, subject){
+  return list.map(s => {
+    const sel = sels[s.id] || { mode: 'auto', s1: 0, s2cat: 's2_academic', s2: 0, s3: 0, s4: -1 };
+    return {
+      name: displayName(s),
+      meta: [s.grade, s.percent ? s.percent + '%' : ''].filter(Boolean).join(' · '),
+      comment: assembleFull(s, sel, subject)
+    };
+  });
+}
+
+function _doDownloadWord(filename){
+  return downloadDocx(filename, wordEntries(students, selections));
 }
 
 // ── Download modal (Export tab) ───────────────────────────────────────────────

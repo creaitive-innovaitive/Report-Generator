@@ -86,6 +86,7 @@ function loadSavedReportToWorkspace(id){
   if(students.length && !confirm(`Load "${label}" into the workspace?\n\nYour current students will be replaced.`)) return;
   students   = JSON.parse(JSON.stringify(r.students));
   selections = JSON.parse(JSON.stringify(r.selections));
+  if(SUBJECT_BANKS[r.subject]) classes[activeClass].subject = r.subject;
   nextId     = students.length ? Math.max(...students.map(x => x.id)) + 1 : 1;
   saveState();
   renderAll();
