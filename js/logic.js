@@ -42,11 +42,18 @@ function autoS2Cat(s){
 
 const STOP_WORDS = new Set(['with','that','this','their','have','more','should','would','will','from','been','also','make','into','each','which','they','there','when','than','every','over','such','some','must','needs','need','shown','shows','both','across','throughout','other','these','those','where','while','being','about','after','before','still','even']);
 
+const _keyCache = new Map();
 function contentKeys(text, names){
+  const ck = names.join('|') + '#' + text;
+  const hit = _keyCache.get(ck);
+  if(hit) return hit;
   const skip = new Set(names.flatMap(n => String(n).toLowerCase().match(/[a-z]+/g) || []));
-  return (String(text).toLowerCase().match(/[a-z]+/g) || [])
+  const keys = (String(text).toLowerCase().match(/[a-z]+/g) || [])
     .filter(w => w.length >= 4 && !STOP_WORDS.has(w) && !skip.has(w))
     .map(w => w.slice(0, 5)); // crude stem: focus/focused/focusing
+  if(_keyCache.size > 20000) _keyCache.clear();
+  _keyCache.set(ck, keys);
+  return keys;
 }
 
 function overlapScore(existing, candidate, names){
