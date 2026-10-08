@@ -32,6 +32,8 @@ function nameTypeTag(s){
   return '<span style="color:var(--muted);font-size:.72rem">International</span>';
 }
 
+const esc = t => String(t).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
+
 function rateSel(id, field, val){
   const opts = ['Very Good', 'Good', 'Satisfactory', 'Needs Improvement']
     .map(o => `<option${o === val ? ' selected' : ''}>${o}</option>`).join('');
@@ -74,8 +76,8 @@ function renderRoster(){
       ${!s.gender ? '<span style="color:var(--danger);font-size:.7rem;margin-left:.2rem">⚠</span>' : ''}`;
     h += `<tr>
       <td style="color:var(--muted)">${i + 1}</td>
-      <td><strong>${s.fullName}</strong>${s.nickname ? ` <span style="color:var(--muted);font-size:.75rem">(${s.nickname})</span>` : ''}</td>
-      <td><span class="tag-short">${sn}</span></td>
+      <td><input class="name-in" style="font-weight:700;width:100%" value="${esc(s.fullName)}" onchange="setName(${s.id},'fullName',this.value)"/></td>
+      <td><input class="name-in" style="width:130px" value="${esc(sn)}" onchange="setName(${s.id},'short',this.value)" title="Short name used in comments"/></td>
       <td><div style="display:flex;align-items:center;gap:.2rem">${genderBtns}</div></td>
       <td><select class="s-sel" style="width:64px" onchange="setField(${s.id},'grade',this.value)"><option value="">—</option>${['A*','A','B','C','D','E','F','G','U'].map(g => `<option${g === s.grade ? ' selected' : ''}>${g}</option>`).join('')}</select></td>
       <td><input type="number" min="0" max="100" style="width:64px" value="${s.percent || ''}" onchange="setField(${s.id},'percent',this.value)"/></td>

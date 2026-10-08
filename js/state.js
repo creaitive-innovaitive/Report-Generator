@@ -120,6 +120,25 @@ function blankForNextReport(){
   saveState(); renderAll();
 }
 
+// Edit a name in place. 'short' sets the nickname, which overrides the automatic short-name rules.
+function setName(id, field, val){
+  const s = students.find(x => x.id === id);
+  if(!s) return;
+  val = val.trim();
+  if(field === 'fullName'){
+    if(!val){ renderAll(); return; }
+    const p = parseBracketed(val);
+    s.fullName = p.fullName;
+    if(p.nickname) s.nickname = p.nickname;
+    s.viet   = isViet(s.fullName);
+    s.jap    = !s.viet && isJapanese(s.fullName);
+    s.korean = !s.viet && !s.jap && isKorean(s.fullName);
+  } else {
+    s.nickname = val === shortName(Object.assign({}, s, { nickname: '' })) ? '' : val;
+  }
+  saveState(); renderAll();
+}
+
 function delStudent(id){
   students = students.filter(s => s.id !== id);
   delete selections[id];
