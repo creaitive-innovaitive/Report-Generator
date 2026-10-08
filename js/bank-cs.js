@@ -2,19 +2,30 @@
 
 const BANK_CS = {
   A: {
+    split: 5, // first 5 s1/s2_academic entries are theory, last 5 programming
     s1:[
-      "[FULL_NAME] has delivered an outstanding performance in Computer Science this term.",
-      "[FULL_NAME] has excelled this term, showing exceptional problem-solving ability in Computer Science.",
-      "[FULL_NAME] has produced exemplary work in both theory and programming throughout this term.",
-      "[FULL_NAME] consistently demonstrates a brilliant grasp of computational thinking and programming.",
-      "[FULL_NAME] has been a standout student, achieving an excellent standard across all units."
+      "[FULL_NAME] shows an excellent command of theory topics and explains concepts with outstanding accuracy.",
+      "[FULL_NAME] explains theoretical concepts with precision and uses technical vocabulary confidently.",
+      "[FULL_NAME] has mastered the theory content this term and applies it well to unfamiliar questions.",
+      "[FULL_NAME] consistently scores highly on theory assessments, showing precise and secure knowledge.",
+      "[FULL_NAME] links theory topics together impressively, showing real depth of understanding.",
+      "[FULL_NAME] writes clean, efficient and well-structured code and solves programming problems with confidence.",
+      "[FULL_NAME] has shown outstanding programming ability, producing accurate solutions to complex tasks.",
+      "[FULL_NAME] approaches programming problems logically, breaking tasks down with real skill.",
+      "[FULL_NAME] debugs quickly and methodically, and produces reliable, well-tested programs.",
+      "[FULL_NAME] has excelled in practical programming, writing code that is both correct and readable."
     ],
     s2_academic:[
       "[SHORT_NAME] should refine written explanations in theory questions to fully maximise marks.",
+      "[SHORT_NAME] can improve further by using precise technical terminology in every extended theory answer.",
+      "[SHORT_NAME] would benefit from practising longer explain and discuss questions under timed conditions.",
+      "[SHORT_NAME] should revisit the finer detail of each theory topic to secure the final marks.",
+      "[SHORT_NAME] is encouraged to link theory to real-world examples to strengthen top-band answers.",
       "[SHORT_NAME] can improve further by testing code more systematically against edge cases.",
       "[SHORT_NAME] would benefit from practising pseudocode and trace tables under timed conditions.",
-      "[SHORT_NAME] should aim for greater precision with technical terminology in exam answers.",
-      "[SHORT_NAME] is encouraged to explore more efficient algorithms and compare their trade-offs."
+      "[SHORT_NAME] is encouraged to explore more efficient algorithms and compare their trade-offs.",
+      "[SHORT_NAME] should use clearer comments and meaningful variable names to make code easier to read.",
+      "[SHORT_NAME] should practise writing complete programs from scratch under exam conditions."
     ],
     s2_effort:[
       "[SHORT_NAME] should ensure that strong classroom performance is matched by equally diligent independent study.",
@@ -45,19 +56,30 @@ const BANK_CS = {
     ]
   },
   B: {
+    split: 5, // first 5 s1/s2_academic entries are theory, last 5 programming
     s1:[
-      "[FULL_NAME] has shown solid progress in Computer Science and a good grasp of core concepts.",
-      "[FULL_NAME] has worked consistently well this term, achieving a sound standard throughout.",
-      "[FULL_NAME] demonstrates a reliable understanding of key programming and theory topics.",
-      "[FULL_NAME] has made good progress and engages positively with computing topics this term.",
-      "[FULL_NAME] shows a competent understanding of algorithms, data representation and programming."
+      "[FULL_NAME] has a secure understanding of most theory topics and answers questions accurately.",
+      "[FULL_NAME] explains core theory concepts clearly and is building a good technical vocabulary.",
+      "[FULL_NAME] has made solid progress in theory and shows good recall of key content.",
+      "[FULL_NAME] engages well in theory lessons and shows a good grasp of key definitions.",
+      "[FULL_NAME] performs reliably in theory assessments and applies knowledge sensibly.",
+      "[FULL_NAME] writes working programs with growing confidence and a solid grasp of programming constructs.",
+      "[FULL_NAME] uses selection, iteration and subroutines accurately in programming tasks.",
+      "[FULL_NAME] has made good progress in programming and completes practical tasks reliably.",
+      "[FULL_NAME] shows a logical approach to problem solving and produces sound code.",
+      "[FULL_NAME] is becoming a more independent programmer and tackles tasks with a positive attitude."
     ],
     s2_academic:[
-      "[SHORT_NAME] should focus on explaining each step of an algorithm clearly in exam answers.",
+      "[SHORT_NAME] should focus on explaining each point fully rather than giving short, definition-only answers.",
+      "[SHORT_NAME] needs to learn key terminology more securely and use it accurately in written answers.",
+      "[SHORT_NAME] would benefit from regular retrieval practice, such as flashcards and past-paper questions.",
+      "[SHORT_NAME] must manage exam time more carefully on longer theory questions.",
+      "[SHORT_NAME] is encouraged to answer the command word precisely, such as describe, explain or state.",
       "[SHORT_NAME] needs to improve accuracy when completing trace tables and tracing code.",
-      "[SHORT_NAME] would benefit from using technical terminology with greater consistency in answers.",
-      "[SHORT_NAME] must manage exam time more carefully, especially on longer programming questions.",
-      "[SHORT_NAME] is encouraged to debug code methodically rather than relying on trial and error."
+      "[SHORT_NAME] is encouraged to debug code methodically rather than relying on trial and error.",
+      "[SHORT_NAME] should practise more programming tasks independently to build speed and accuracy.",
+      "[SHORT_NAME] needs to check syntax and indentation carefully to avoid avoidable errors.",
+      "[SHORT_NAME] should plan solutions in pseudocode or flowcharts before starting to code."
     ],
     s2_effort:[
       "[SHORT_NAME] must commit to more consistent independent study and revision to consolidate learning.",
@@ -88,19 +110,30 @@ const BANK_CS = {
     ]
   },
   C: {
+    split: 5, // first 5 s1/s2_academic entries are theory, last 5 programming
     s1:[
-      "[FULL_NAME] has worked to establish a foundational understanding of Computer Science this term.",
-      "[FULL_NAME] shows some engagement with core computing topics and a cooperative class attitude.",
-      "[FULL_NAME] has contributed positively to class and is beginning to develop programming skills.",
-      "[FULL_NAME] demonstrates a growing grasp of fundamental computing concepts across key topics.",
-      "[FULL_NAME] has shown willingness to engage and is developing [THEIR] understanding of the subject."
+      "[FULL_NAME] has made a start on building theory knowledge and can recall several key definitions.",
+      "[FULL_NAME] shows a basic understanding of core theory topics and participates cooperatively in lessons.",
+      "[FULL_NAME] has shown good understanding of some theory topics and responds well to guidance.",
+      "[FULL_NAME] is beginning to grasp the main ideas in theory and shows willingness to learn.",
+      "[FULL_NAME] has demonstrated understanding of some theory concepts when they are revisited and practised.",
+      "[FULL_NAME] can write simple programs and is beginning to use programming constructs correctly.",
+      "[FULL_NAME] has shown growth in practical programming and completes basic tasks with support.",
+      "[FULL_NAME] shows enthusiasm for coding tasks and is developing logical problem-solving skills.",
+      "[FULL_NAME] has made a good start in programming and is learning to read and correct errors.",
+      "[FULL_NAME] is developing [THEIR] programming skills and responds well to feedback on code."
     ],
     s2_academic:[
-      "[SHORT_NAME] must prioritise regular revision to consolidate understanding across all topics.",
-      "[SHORT_NAME] needs to improve the accuracy of written code and algorithms under exam conditions.",
-      "[SHORT_NAME] should focus on building stronger written responses beyond surface description.",
-      "[SHORT_NAME] must dedicate more time to practising exam questions under timed conditions.",
-      "[SHORT_NAME] needs to develop a more disciplined and consistent approach to independent study."
+      "[SHORT_NAME] must revise key terminology regularly so definitions can be recalled accurately in exams.",
+      "[SHORT_NAME] should learn each theory topic in short, regular sessions rather than leaving revision late.",
+      "[SHORT_NAME] needs to move beyond one-word answers and learn to explain points in full sentences.",
+      "[SHORT_NAME] should use topic summaries, flashcards and past papers to consolidate theory knowledge.",
+      "[SHORT_NAME] must practise answering theory questions under timed conditions to build exam confidence.",
+      "[SHORT_NAME] needs to practise basic programming constructs such as loops and selection every week.",
+      "[SHORT_NAME] should work through tasks step by step and test code after each small change.",
+      "[SHORT_NAME] must improve accuracy in tracing code and completing trace tables.",
+      "[SHORT_NAME] should ask for help early when code does not run, rather than leaving errors unresolved.",
+      "[SHORT_NAME] needs to rewrite exercises from memory to secure the main programming patterns."
     ],
     s2_effort:[
       "[SHORT_NAME] must significantly increase effort levels, both in class and in independent study, to make progress.",

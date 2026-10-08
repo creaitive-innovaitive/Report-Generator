@@ -38,6 +38,13 @@ function rateSel(id, field, val){
   return `<select class="s-sel" onchange="setField(${id},'${field}',this.value)"><option value="">—</option>${opts}</select>`;
 }
 
+// <option>s for a bank array, split into Theory / Programming groups when the bank defines `split`.
+function splitOpts(list, split, selIdx, mk, labels){
+  if(!split) return labels[2] === '' ? list.map(mk).join('') : `<optgroup label="Academic Skills">${list.map(mk).join('')}</optgroup>`;
+  return `<optgroup label="${labels[0]}">${list.slice(0, split).map(mk).join('')}</optgroup>` +
+         `<optgroup label="${labels[1]}">${list.slice(split).map((x, i) => mk(x, i + split)).join('')}</optgroup>`;
+}
+
 function renderRoster(){
   const w = document.getElementById('roster-wrap');
   if(!students.length){
@@ -106,9 +113,10 @@ function renderComments(){
     const ccMsg   = len > 350 ? `⚠ ${len}/350 — too long` : `${len} / 350 chars`;
 
     const s2Opts = [
-      `<optgroup label="Academic Skills">`,
-      ...currentBank()[t].s2_academic.map((tmpl, i) => `<option value="s2_academic:${i}"${s2cat === 's2_academic' && sel.s2 === i ? ' selected' : ''}>${renderTmpl(tmpl, dn, sn, g)}</option>`),
-      `</optgroup><optgroup label="Effort & Work Ethic">`,
+      splitOpts(currentBank()[t].s2_academic, currentBank()[t].split, sel.s2,
+        (tmpl, i) => `<option value="s2_academic:${i}"${s2cat === 's2_academic' && sel.s2 === i ? ' selected' : ''}>${renderTmpl(tmpl, dn, sn, g)}</option>`,
+        ['Academic — Theory', 'Academic — Programming']),
+      `<optgroup label="Effort & Work Ethic">`,
       ...currentBank()[t].s2_effort.map((tmpl, i) => `<option value="s2_effort:${i}"${s2cat === 's2_effort' && sel.s2 === i ? ' selected' : ''}>${renderTmpl(tmpl, dn, sn, g)}</option>`),
       `</optgroup><optgroup label="Behaviour">`,
       ...currentBank()[t].s2_behaviour.map((tmpl, i) => `<option value="s2_behaviour:${i}"${s2cat === 's2_behaviour' && sel.s2 === i ? ' selected' : ''}>${renderTmpl(tmpl, dn, sn, g)}</option>`),
@@ -141,7 +149,7 @@ function renderComments(){
       <div class="s-row${isAuto ? ' auto-row' : ''}">
         <span class="s-lbl">S1 · Opening${isAuto ? '<small>editable</small>' : ''}</span>
         <select class="s-sel" onchange="updateS(${s.id},'s1',this.value)">
-          ${currentBank()[t].s1.map((tmpl, i) => `<option value="${i}"${sel.s1 === i ? ' selected' : ''}>${renderTmpl(tmpl, dn, sn, g)}</option>`).join('')}
+          ${splitOpts(currentBank()[t].s1, currentBank()[t].split, sel.s1, (tmpl, i) => `<option value="${i}"${sel.s1 === i ? ' selected' : ''}>${renderTmpl(tmpl, dn, sn, g)}</option>`, ['Theory', 'Programming', ''])}
         </select>
       </div>
       <div class="s-row${isAuto ? ' auto-row' : ''}">
