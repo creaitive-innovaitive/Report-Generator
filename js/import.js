@@ -28,21 +28,19 @@ async function downloadTemplate(){
     const i = S(v); return i === null ? '' : `<c r="${r}" t="s"><v>${i}</v></c>`;
   };
 
-  const COLS = 'ABCDEFGH';
+  const COLS = 'ABCDE';
   const PEB  = 'Needs Improvement,Satisfactory,Good,Very Good';
 
   // ── Student Data sheet ─────────────────────────────────────────────────────
-  const HDRS = ['Student Name','Nickname','Gender','Grade','%','Progress','Effort','Behaviour'];
+  const HDRS = ['Student Name','Nickname','Gender','Grade','%'];
   const hdrRow   = HDRS.map((h,i) => sc(COLS[i]+'1', h, 1)).join('');
   const exRow1   = [
     sc('A2','[EXAMPLE] Le Thanh Hung (Nancy)',2), sc('B2','Nancy',2),
     sc('C2','F',2), sc('D2','A',2), nc('E2',87,2),
-    sc('F2','Very Good',2), sc('G2','Good',2), sc('H2','Very Good',2),
   ].join('');
   const exRow2   = [
     sc('A3','[EXAMPLE] Araki Shoei',2), sc('B3','',2),
     sc('C3','M',2), sc('D3','B',2), nc('E3',72,2),
-    sc('F3','Good',2), sc('G3','Satisfactory',2), sc('H3','Good',2),
   ].join('');
 
   const sheet1 = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
@@ -57,21 +55,15 @@ async function downloadTemplate(){
 <col min="3" max="3" width="9" customWidth="1"/>
 <col min="4" max="4" width="8" customWidth="1"/>
 <col min="5" max="5" width="7" customWidth="1"/>
-<col min="6" max="6" width="20" customWidth="1"/>
-<col min="7" max="7" width="20" customWidth="1"/>
-<col min="8" max="8" width="20" customWidth="1"/>
 </cols>
 <sheetData>
 <row r="1" ht="20" customHeight="1" s="1" customFormat="1">${hdrRow}</row>
 <row r="2" s="2" customFormat="1">${exRow1}</row>
 <row r="3" s="2" customFormat="1">${exRow2}</row>
 </sheetData>
-<dataValidations count="5">
+<dataValidations count="2">
 <dataValidation type="list" allowBlank="1" showDropDown="0" showErrorMessage="1" sqref="C2:C3000"><formula1>"M,F"</formula1></dataValidation>
-<dataValidation type="list" allowBlank="1" showDropDown="0" showErrorMessage="1" sqref="D2:D3000"><formula1>"A*,A,B,C,D,E,F,G"</formula1></dataValidation>
-<dataValidation type="list" allowBlank="1" showDropDown="0" showErrorMessage="1" sqref="F2:F3000"><formula1>"${PEB}"</formula1></dataValidation>
-<dataValidation type="list" allowBlank="1" showDropDown="0" showErrorMessage="1" sqref="G2:G3000"><formula1>"${PEB}"</formula1></dataValidation>
-<dataValidation type="list" allowBlank="1" showDropDown="0" showErrorMessage="1" sqref="H2:H3000"><formula1>"${PEB}"</formula1></dataValidation>
+<dataValidation type="list" allowBlank="1" showDropDown="0" showErrorMessage="1" sqref="D2:D3000"><formula1>"A*,A,B,C,D,E,F,G,U"</formula1></dataValidation>
 </dataValidations>
 </worksheet>`;
 
@@ -81,7 +73,7 @@ async function downloadTemplate(){
     ['','',''],
     ['HOW TO USE THIS TEMPLATE','',''],
     ['1. Delete the two [EXAMPLE] rows in the “Student Data” tab.','',''],
-    ['2. Fill in your class — use the dropdowns for Gender, Grade, Progress, Effort & Behaviour.','',''],
+    ['2. Fill in your class — or skip the template and upload your tracking workbook directly (see below).','',''],
     ['3. Excel: File → Save As → Excel Workbook (.xlsx)','',''],
     ['   Google Sheets: File → Download → Microsoft Excel (.xlsx)  or  → CSV','',''],
     ['4. Upload the completed file to the Report Generator website.','',''],
@@ -93,14 +85,11 @@ async function downloadTemplate(){
     ['Gender','Required to generate comments.','M  or  F'],
     ['Grade','Achieved grade for this reporting period.','A*, A, B, C, D, E, F, G'],
     ['%','Percentage score — no % symbol needed.','0–100'],
-    ['Progress','Progress rating for the term.','Needs Improvement / Satisfactory / Good / Very Good'],
-    ['Effort','Effort rating for the term.','Needs Improvement / Satisfactory / Good / Very Good'],
-    ['Behaviour','Behaviour rating for the term.','Needs Improvement / Satisfactory / Good / Very Good'],
     ['','',''],
     ['TIPS','',''],
-    ['• Gender, Grade, Progress, Effort and Behaviour columns have dropdown menus in Excel.','',''],
+    ['• Tracking workbooks: if the file has an “Average Grade” tab, names, Ave and Grade are read from it automatically. Only Gender is left to set.','',''],
+    ['• Progress is set from the grade (A/A* Very Good, B Good, C Satisfactory, D–G Needs Improvement). Effort and Behaviour are set on the website.','',''],
     ['• Names with nicknames in brackets — Le Thanh Hung (Nancy) — are parsed automatically.','',''],
-    ['• P/E/B are optional but drive auto sentence selection on the website.','',''],
     ['• Text matching is case-insensitive — "very good" and "Very Good" both work.','',''],
   ];
   const instrRows = instrData.map((row, ri) => {
@@ -232,7 +221,7 @@ async function importFromGoogleSheets(){
     const text = await res.text();
     // Parse CSV via SheetJS then hand off to the shared import logic
     const wb   = XLSX.read(text, { type: 'string' });
-    const dataSheets = wb.SheetNames.filter(n => !/instructions/i.test(n));
+    const dataSheets = dataSheetsOf(wb);
     if(dataSheets.length > 1){
       _pendingWb = wb;
       openSheetPicker(dataSheets);
@@ -258,7 +247,7 @@ function handleSheet(e){
   reader.onload = ev => {
     try {
       const wb = XLSX.read(ev.target.result, { type: 'binary' });
-      const dataSheets = wb.SheetNames.filter(n => !/instructions/i.test(n));
+      const dataSheets = dataSheetsOf(wb);
       if(dataSheets.length > 1){
         _pendingWb = wb;
         openSheetPicker(dataSheets);
@@ -369,8 +358,40 @@ function _importWorkbook(wb, sheetName, sourceName){
   saveState(); renderAll();
 }
 
+const AVG_SHEET = /average\s*grade/i;
+
+// Sheets worth importing: a tracking workbook's "Average Grade" tab wins outright.
+function dataSheetsOf(wb){
+  const avg = wb.SheetNames.find(n => AVG_SHEET.test(n));
+  return avg ? [avg] : wb.SheetNames.filter(n => !/instructions/i.test(n));
+}
+
+// Tracking-workbook layout: names in the column left of the first header, "Ave" and "Grade" headers.
+function _importAverageGrade(wb, sheetName){
+  const rows = XLSX.utils.sheet_to_json(wb.Sheets[sheetName], { header: 1, defval: '' });
+  const hi = rows.findIndex(r => r.some(c => /^ave/i.test(String(c).trim())) && r.some(c => /^grade$/i.test(String(c).trim())));
+  if(hi < 0) return [0, 0];
+  const hdr = rows[hi].map(c => String(c).trim());
+  const aveCol   = hdr.findIndex(c => /^ave/i.test(c));
+  const gradeCol = hdr.findIndex(c => /^grade$/i.test(c));
+  const nameCol  = hdr.findIndex(c => c !== '') - 1;
+  let added = 0, skipped = 0;
+  for(let i = hi + 1; i < rows.length; i++){
+    const name  = String(rows[i][nameCol] || '').trim();
+    const grade = String(rows[i][gradeCol] || '').trim().toUpperCase();
+    if(!name || !grade){ if(name) skipped++; continue; }
+    const parsed = parseBracketed(name);
+    if(!parsed.fullName){ skipped++; continue; }
+    const ave = parseFloat(rows[i][aveCol]);
+    pushStudent(parsed.fullName, parsed.nickname, grade, isNaN(ave) ? 0 : Math.round(ave), '', '', '', '');
+    added++;
+  }
+  return [added, skipped];
+}
+
 // Parse one sheet and push students; returns [added, skipped]
 function _importSheet(wb, sheetName){
+  if(AVG_SHEET.test(sheetName)) return _importAverageGrade(wb, sheetName);
   const rows = XLSX.utils.sheet_to_json(wb.Sheets[sheetName] || {}, { defval: '' });
   let added = 0, skipped = 0;
   rows.forEach(row => {

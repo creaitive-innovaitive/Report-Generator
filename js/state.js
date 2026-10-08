@@ -56,6 +56,15 @@ function switchClass(i){
   renderAll();
 }
 
+function swapClasses(){
+  const n = parseInt(prompt(`Swap "${classes[activeClass].name}" with which class? (1-${CLASS_COUNT})`), 10);
+  if(!(n >= 1 && n <= CLASS_COUNT) || n - 1 === activeClass) return;
+  saveState();
+  const j = n - 1;
+  [classes[activeClass], classes[j]] = [classes[j], classes[activeClass]];
+  switchClass(j);
+}
+
 function renameClass(i){
   const n = prompt('Class name:', classes[i].name);
   if(n && n.trim()){ classes[i].name = n.trim(); saveState(); renderAll(); }

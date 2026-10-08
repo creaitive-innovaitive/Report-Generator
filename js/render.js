@@ -5,7 +5,7 @@ function renderClassTabs(){
   if(!el) return;
   el.innerHTML = classes.map((c, i) =>
     `<button class="class-tab${i === activeClass ? ' active' : ''}" onclick="switchClass(${i})" ondblclick="renameClass(${i})" title="Double-click to rename">${c.name}${c.students.length ? ` <span class="class-n">${c.students.length}</span>` : ''}</button>`
-  ).join('') + `<button class="class-tab-edit" onclick="renameClass(activeClass)" title="Rename this class">✏️</button>`;
+  ).join('') + `<button class="class-tab-edit" onclick="renameClass(activeClass)" title="Rename this class">✏️</button><button class="class-tab-edit" onclick="swapClasses()" title="Swap this class with another position">⇄</button>`;
 }
 
 function renderAll(){
@@ -69,7 +69,7 @@ function renderRoster(){
       <td><strong>${s.fullName}</strong>${s.nickname ? ` <span style="color:var(--muted);font-size:.75rem">(${s.nickname})</span>` : ''}</td>
       <td><span class="tag-short">${sn}</span></td>
       <td><div style="display:flex;align-items:center;gap:.2rem">${genderBtns}</div></td>
-      <td><select class="s-sel" style="width:64px" onchange="setField(${s.id},'grade',this.value)"><option value="">—</option>${['A*','A','B','C','D','E','F','G'].map(g => `<option${g === s.grade ? ' selected' : ''}>${g}</option>`).join('')}</select></td>
+      <td><select class="s-sel" style="width:64px" onchange="setField(${s.id},'grade',this.value)"><option value="">—</option>${['A*','A','B','C','D','E','F','G','U'].map(g => `<option${g === s.grade ? ' selected' : ''}>${g}</option>`).join('')}</select></td>
       <td><input type="number" min="0" max="100" style="width:64px" value="${s.percent || ''}" onchange="setField(${s.id},'percent',this.value)"/></td>
       <td>${rateSel(s.id, 'progress', s.progress)}</td>
       <td>${rateSel(s.id, 'effort', s.effort)}</td>
