@@ -40,7 +40,7 @@ function autoS2Cat(s){
 // ── Repetition avoidance ──────────────────────────────────────────────────────
 // Auto mode picks S2/S3/S4 that share the fewest content words with what is already written.
 
-const STOP_WORDS = new Set(['with','that','this','their','have','more','should','would','will','from','been','term','also','make','into','each','which','they','there','when','than','every','over','such','some','must','needs','need','shown','shows','both','across','throughout','other','these','those','where','while','being','about','after','before','still','even']);
+const STOP_WORDS = new Set(['with','that','this','their','have','more','should','would','will','from','been','also','make','into','each','which','they','there','when','than','every','over','such','some','must','needs','need','shown','shows','both','across','throughout','other','these','those','where','while','being','about','after','before','still','even']);
 
 function contentKeys(text, names){
   const skip = new Set(names.flatMap(n => String(n).toLowerCase().match(/[a-z]+/g) || []));
