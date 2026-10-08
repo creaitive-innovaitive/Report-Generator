@@ -187,7 +187,7 @@ function openSaveModal(){
     `<option value="${s}">${s}</option>`
   ).join('');
 
-  document.getElementById('m-term').value = 'Term 1';
+  document.getElementById('m-term').value = importPeriod || 'Term 1';
   document.getElementById('m-name').value = '';
   document.getElementById('save-modal').style.display = 'flex';
   document.getElementById('m-year').focus();

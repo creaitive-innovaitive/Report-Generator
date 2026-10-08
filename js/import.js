@@ -203,6 +203,7 @@ ${sst.map(s => `<si><t xml:space="preserve">${xs(s)}</t></si>`).join('\n')}
 async function importFromGoogleSheets(){
   const input = document.getElementById('gs-url');
   const url   = (input ? input.value : '').trim();
+  if(!requirePeriod()) return;
   if(!url){ alert('Please paste a Google Sheets link first.'); return; }
 
   // Extract the spreadsheet ID from any Google Sheets URL format
@@ -369,28 +370,77 @@ function dataSheetsOf(wb){
   return avg ? [avg] : wb.SheetNames.filter(n => !/instructions/i.test(n));
 }
 
-// Tracking-workbook layout: names in the column left of the first header, "Ave" and "Grade" headers.
+// Period chosen on the Students tab before uploading; picks which table on the Average Grade tab to read.
+let importPeriod = null;
+const PERIOD_PATTERNS = {
+  'Term 1':     /term\s*1\b/i,
+  'Semester 1': /sem(ester)?\s*1\b/i,
+  'Semester 2': /sem(ester)?\s*2\b/i
+};
+
+function setImportPeriod(p){
+  importPeriod = p;
+  document.querySelectorAll('.period-btn').forEach(b => b.classList.toggle('active', b.dataset.period === p));
+}
+
+function requirePeriod(){
+  if(importPeriod) return true;
+  alert('Choose Term 1, Semester 1 or Semester 2 first.');
+  return false;
+}
+
+// Tracking-workbook layout: each table has an "Ave"/"Average" header next to a "Grade" header,
+// with a period title (e.g. "Term 1") above it and the student names to the left.
 function _importAverageGrade(wb, sheetName){
   const rows = XLSX.utils.sheet_to_json(wb.Sheets[sheetName], { header: 1, defval: '' });
-  const hi = rows.findIndex(r => r.some(c => /^ave/i.test(String(c).trim())) && r.some(c => /^grade$/i.test(String(c).trim())));
-  if(hi < 0) return [0, 0];
-  const hdr = rows[hi].map(c => String(c).trim());
-  const aveCol   = hdr.findIndex(c => /^ave/i.test(c));
-  const gradeCol = hdr.findIndex(c => /^grade$/i.test(c));
+  const str  = (r, c) => String((rows[r] || [])[c] ?? '').trim();
+
+  const tables = [];
+  rows.forEach((row, r) => row.forEach((cell, c) => {
+    if(!/^ave/i.test(String(cell).trim())) return;
+    for(let g = c + 1; g <= c + 3; g++){
+      if(/^grade$/i.test(str(r, g))){ tables.push({ hdr: r, ave: c, grade: g }); break; }
+    }
+  }));
+  if(!tables.length) return [0, 0];
+
+  tables.forEach(t => {
+    t.titles = [];
+    for(let r = Math.max(0, t.hdr - 3); r < t.hdr; r++)
+      for(let c = Math.max(0, t.ave - 6); c <= t.grade; c++)
+        if(str(r, c)) t.titles.push(str(r, c));
+  });
+
+  const pat = PERIOD_PATTERNS[importPeriod];
+  let table = pat && tables.find(t => t.titles.some(x => pat.test(x)));
+  if(!table){
+    const labelled = tables.some(t => t.titles.some(x => /term|sem/i.test(x)));
+    if(labelled){
+      const found = [...new Set(tables.flatMap(t => t.titles.filter(x => /term|sem/i.test(x))))].join(', ');
+      alert(`Couldn't find a "${importPeriod}" table on the "${sheetName}" tab.\n\nTables found: ${found}`);
+      return [0, 0];
+    }
+    table = tables[0]; // unlabelled single-table sheet
+  }
+
+  const end = Math.min(...tables.filter(t => t.hdr > table.hdr).map(t => t.hdr), rows.length);
   // Name column = whichever column left of "Ave" holds the most text in graded rows
   let nameCol = 0, best = -1;
-  for(let c = 0; c < aveCol; c++){
-    const n = rows.slice(hi + 1).filter(r => String(r[gradeCol] || '').trim() && String(r[c] || '').trim() && isNaN(parseFloat(r[c]))).length;
+  for(let c = 0; c < table.ave; c++){
+    let n = 0;
+    for(let r = table.hdr + 1; r < end; r++)
+      if(str(r, table.grade) && str(r, c) && isNaN(parseFloat(str(r, c)))) n++;
     if(n > best){ best = n; nameCol = c; }
   }
+
   let added = 0, skipped = 0;
-  for(let i = hi + 1; i < rows.length; i++){
-    const name  = String(rows[i][nameCol] || '').trim();
-    const grade = String(rows[i][gradeCol] || '').trim().toUpperCase();
+  for(let r = table.hdr + 1; r < end; r++){
+    const name  = str(r, nameCol);
+    const grade = str(r, table.grade).toUpperCase();
     if(!name || !grade){ if(name) skipped++; continue; }
     const parsed = parseBracketed(name);
     if(!parsed.fullName){ skipped++; continue; }
-    const ave = parseFloat(rows[i][aveCol]);
+    const ave = parseFloat(rows[r][table.ave]);
     pushStudent(parsed.fullName, parsed.nickname, grade, isNaN(ave) ? 0 : Math.round(ave), '', '', '', '');
     added++;
   }

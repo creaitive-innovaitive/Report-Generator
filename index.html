@@ -91,6 +91,12 @@
 
   <div class="card">
     <div class="card-title">Import from Template</div>
+    <div class="period-row">
+      <span class="gs-label">Import period (pick before uploading):</span>
+      <button class="btn btn-ghost period-btn" data-period="Term 1" onclick="setImportPeriod('Term 1')">Term 1</button>
+      <button class="btn btn-ghost period-btn" data-period="Semester 1" onclick="setImportPeriod('Semester 1')">Semester 1</button>
+      <button class="btn btn-ghost period-btn" data-period="Semester 2" onclick="setImportPeriod('Semester 2')">Semester 2</button>
+    </div>
     <div class="upload-grid">
       <div class="upload-box" style="cursor:default">
         <div class="icon">⬇️</div>
@@ -99,7 +105,7 @@
         <button class="btn btn-primary" style="margin-top:.75rem" onclick="downloadTemplate()">Download Template (.xlsx)</button>
       </div>
       <label class="upload-box">
-        <input type="file" accept=".xlsx,.xls,.csv" onchange="handleSheet(event)"/>
+        <input type="file" accept=".xlsx,.xls,.csv" onclick="if(!requirePeriod()) event.preventDefault()" onchange="handleSheet(event)"/>
         <div class="icon">📤</div>
         <strong>Step 2 — Upload Completed Template</strong>
         <p>Excel (.xlsx / .xls) or CSV — including Google Sheets exports.</p>

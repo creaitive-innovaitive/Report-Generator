@@ -131,3 +131,6 @@ select.s-sel{font-size:.78rem;width:100%}
 .class-tab.active{background:var(--primary);border-color:var(--primary);color:#fff}
 .class-n{font-size:.72rem;opacity:.75;margin-left:.2rem}
 .class-tab-edit{background:none;border:none;cursor:pointer;font-size:.85rem}
+
+.period-row{display:flex;gap:.5rem;align-items:center;flex-wrap:wrap;margin-bottom:.9rem}
+.period-btn.active{background:var(--primary);border-color:var(--primary);color:#fff}
