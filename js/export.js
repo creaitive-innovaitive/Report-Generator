@@ -184,7 +184,7 @@ function openSaveModal(){
   ).join('');
 
   document.getElementById('m-subject').innerHTML = SUBJECTS.map(s =>
-    `<option value="${s}">${s}</option>`
+    `<option value="${s}"${s === currentSubject() ? ' selected' : ''}>${s}</option>`
   ).join('');
 
   document.getElementById('m-term').value = importPeriod || 'Term 1';

@@ -14,6 +14,13 @@ function setRosterLabel(name){
 // Five switchable classes, each with its own students and comment selections.
 const CLASSES_KEY = 'betr_classes';
 const CLASS_COUNT = 5;
+// Subject per class decides which comment bank is used.
+const SUBJECT_BANKS = { 'Economics': () => BANK, 'Computer Science': () => BANK_CS };
+function guessSubject(name){ return /computer|\bcs\b/i.test(name || '') ? 'Computer Science' : 'Economics'; }
+function currentSubject(){ return classes[activeClass].subject || guessSubject(classes[activeClass].name); }
+function currentBank(){ return (SUBJECT_BANKS[currentSubject()] || SUBJECT_BANKS['Economics'])(); }
+function setClassSubject(sub){ classes[activeClass].subject = sub; saveState(); renderAll(); }
+
 let classes = [];
 let activeClass = 0;
 

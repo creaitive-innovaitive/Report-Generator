@@ -45,22 +45,22 @@ function assembleFull(s, sel){
   const isAuto = sel.mode === 'auto';
 
   const s2cat = isAuto ? autoS2Cat(s) : (sel.s2cat || 's2_academic');
-  const p1 = renderTmpl(BANK[t].s1[sel.s1 || 0], dn, sn, g);
-  const p2 = renderTmpl(BANK[t][s2cat][sel.s2 || 0], dn, sn, g);
-  const p3 = renderTmpl(BANK[t].s3[sel.s3 || 0], dn, sn, g);
+  const p1 = renderTmpl(currentBank()[t].s1[sel.s1 || 0], dn, sn, g);
+  const p2 = renderTmpl(currentBank()[t][s2cat][sel.s2 || 0], dn, sn, g);
+  const p3 = renderTmpl(currentBank()[t].s3[sel.s3 || 0], dn, sn, g);
   let comment = `${p1} ${p2} ${p3}`;
 
   if(comment.length < 300){
     const s4idx = isAuto ? -1 : (sel.s4 ?? -1);
     if(s4idx === -1){
-      const bank4 = BANK[t].s4.map((tmpl, i) => ({ i, txt: renderTmpl(tmpl, dn, sn, g) }));
+      const bank4 = currentBank()[t].s4.map((tmpl, i) => ({ i, txt: renderTmpl(tmpl, dn, sn, g) }));
       const fits  = bank4.filter(x => comment.length + 1 + x.txt.length <= 350).sort((a, b) => b.txt.length - a.txt.length);
       if(fits.length) comment = `${comment} ${fits[0].txt}`;
-    } else if(s4idx >= 0 && BANK[t].s4[s4idx]){
-      comment = `${comment} ${renderTmpl(BANK[t].s4[s4idx], dn, sn, g)}`;
+    } else if(s4idx >= 0 && currentBank()[t].s4[s4idx]){
+      comment = `${comment} ${renderTmpl(currentBank()[t].s4[s4idx], dn, sn, g)}`;
     }
-  } else if(sel.s4 >= 0 && !isAuto && BANK[t].s4[sel.s4]){
-    const s4txt = renderTmpl(BANK[t].s4[sel.s4], dn, sn, g);
+  } else if(sel.s4 >= 0 && !isAuto && currentBank()[t].s4[sel.s4]){
+    const s4txt = renderTmpl(currentBank()[t].s4[sel.s4], dn, sn, g);
     if(comment.length + 1 + s4txt.length <= 355) comment = `${comment} ${s4txt}`;
   }
 

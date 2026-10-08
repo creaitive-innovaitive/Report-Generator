@@ -5,7 +5,8 @@ function renderClassTabs(){
   if(!el) return;
   el.innerHTML = classes.map((c, i) =>
     `<button class="class-tab${i === activeClass ? ' active' : ''}" onclick="switchClass(${i})" ondblclick="renameClass(${i})" title="Double-click to rename">${c.name}${c.students.length ? ` <span class="class-n">${c.students.length}</span>` : ''}</button>`
-  ).join('') + `<button class="class-tab-edit" onclick="renameClass(activeClass)" title="Rename this class">✏️</button><button class="class-tab-edit" onclick="swapClasses()" title="Swap this class with another position">⇄</button>`;
+  ).join('') + `<button class="class-tab-edit" onclick="renameClass(activeClass)" title="Rename this class">✏️</button><button class="class-tab-edit" onclick="swapClasses()" title="Swap this class with another position">⇄</button>
+    <select class="class-subject" onchange="setClassSubject(this.value)" title="Comment bank for this class">${Object.keys(SUBJECT_BANKS).map(x => `<option${x === currentSubject() ? ' selected' : ''}>${x}</option>`).join('')}</select>`;
 }
 
 function renderAll(){
@@ -106,18 +107,18 @@ function renderComments(){
 
     const s2Opts = [
       `<optgroup label="Academic Skills">`,
-      ...BANK[t].s2_academic.map((tmpl, i) => `<option value="s2_academic:${i}"${s2cat === 's2_academic' && sel.s2 === i ? ' selected' : ''}>${renderTmpl(tmpl, dn, sn, g)}</option>`),
+      ...currentBank()[t].s2_academic.map((tmpl, i) => `<option value="s2_academic:${i}"${s2cat === 's2_academic' && sel.s2 === i ? ' selected' : ''}>${renderTmpl(tmpl, dn, sn, g)}</option>`),
       `</optgroup><optgroup label="Effort & Work Ethic">`,
-      ...BANK[t].s2_effort.map((tmpl, i) => `<option value="s2_effort:${i}"${s2cat === 's2_effort' && sel.s2 === i ? ' selected' : ''}>${renderTmpl(tmpl, dn, sn, g)}</option>`),
+      ...currentBank()[t].s2_effort.map((tmpl, i) => `<option value="s2_effort:${i}"${s2cat === 's2_effort' && sel.s2 === i ? ' selected' : ''}>${renderTmpl(tmpl, dn, sn, g)}</option>`),
       `</optgroup><optgroup label="Behaviour">`,
-      ...BANK[t].s2_behaviour.map((tmpl, i) => `<option value="s2_behaviour:${i}"${s2cat === 's2_behaviour' && sel.s2 === i ? ' selected' : ''}>${renderTmpl(tmpl, dn, sn, g)}</option>`),
+      ...currentBank()[t].s2_behaviour.map((tmpl, i) => `<option value="s2_behaviour:${i}"${s2cat === 's2_behaviour' && sel.s2 === i ? ' selected' : ''}>${renderTmpl(tmpl, dn, sn, g)}</option>`),
       `</optgroup>`
     ].join('');
 
     const s4Opts = [
       `<option value="-1"${sel.s4 === -1 ? ' selected' : ''}>Auto (add if needed)</option>`,
       `<option value="-2"${sel.s4 === -2 ? ' selected' : ''}>None</option>`,
-      ...BANK[t].s4.map((tmpl, i) => `<option value="${i}"${sel.s4 === i ? ' selected' : ''}>${renderTmpl(tmpl, dn, sn, g)}</option>`)
+      ...currentBank()[t].s4.map((tmpl, i) => `<option value="${i}"${sel.s4 === i ? ' selected' : ''}>${renderTmpl(tmpl, dn, sn, g)}</option>`)
     ].join('');
 
     h += `<div class="sc-card">
@@ -140,7 +141,7 @@ function renderComments(){
       <div class="s-row${isAuto ? ' auto-row' : ''}">
         <span class="s-lbl">S1 · Opening${isAuto ? '<small>editable</small>' : ''}</span>
         <select class="s-sel" onchange="updateS(${s.id},'s1',this.value)">
-          ${BANK[t].s1.map((tmpl, i) => `<option value="${i}"${sel.s1 === i ? ' selected' : ''}>${renderTmpl(tmpl, dn, sn, g)}</option>`).join('')}
+          ${currentBank()[t].s1.map((tmpl, i) => `<option value="${i}"${sel.s1 === i ? ' selected' : ''}>${renderTmpl(tmpl, dn, sn, g)}</option>`).join('')}
         </select>
       </div>
       <div class="s-row${isAuto ? ' auto-row' : ''}">
@@ -150,7 +151,7 @@ function renderComments(){
       <div class="s-row${isAuto ? ' auto-row' : ''}">
         <span class="s-lbl">S3 · Close${isAuto ? '<small>editable</small>' : ''}</span>
         <select class="s-sel" onchange="updateS(${s.id},'s3',this.value)">
-          ${BANK[t].s3.map((tmpl, i) => `<option value="${i}"${sel.s3 === i ? ' selected' : ''}>${renderTmpl(tmpl, dn, sn, g)}</option>`).join('')}
+          ${currentBank()[t].s3.map((tmpl, i) => `<option value="${i}"${sel.s3 === i ? ' selected' : ''}>${renderTmpl(tmpl, dn, sn, g)}</option>`).join('')}
         </select>
       </div>
       ${len < 330 || !isAuto ? `<div class="s-row">
