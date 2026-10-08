@@ -389,18 +389,6 @@ function requirePeriod(){
   return false;
 }
 
-function _gradeBoundaries(rows){
-  const out = [];
-  rows.forEach((row, r) => row.forEach((cell, c) => {
-    if(!/grade boundaries/i.test(String(cell))) return;
-    for(let i = r + 1; i <= r + 12 && rows[i]; i++){
-      const g = String(rows[i][c]).trim().toUpperCase(), v = parseFloat(rows[i][c + 1]);
-      if(/^[A-G]\*?$/.test(g) && !isNaN(v)) out.push([g, v]);
-    }
-  }));
-  return out.length ? out.sort((a, b) => b[1] - a[1]) : [['A',80],['B',70],['C',60],['D',50],['E',40],['F',30],['G',20]];
-}
-
 // Tracking-workbook layout: each table has an "Ave"/"Average" header next to a "Grade" header,
 // with a period title (e.g. "Term 1") above it and the student names to the left.
 function _importAverageGrade(wb, sheetName){
@@ -445,22 +433,20 @@ function _importAverageGrade(wb, sheetName){
     if(n > best){ best = n; nameCol = c; }
   }
 
-  // Some trackers leave Grade blank, so fall back to the sheet's own boundaries (or 80/70/60/50/40/30/20)
-  const bounds = _gradeBoundaries(rows);
-
-  let added = 0, skipped = 0;
+  let added = 0, skipped = 0, noGrade = 0;
   for(let r = table.hdr + 1; r < end; r++){
     const name = str(r, nameCol);
     if(!name) continue;
     const ave = parseFloat(rows[r][table.ave]);
-    let grade = str(r, table.grade).toUpperCase();
-    if(!grade && !isNaN(ave)) grade = (bounds.find(b => ave >= b[1]) || ['U'])[0];
-    if(!grade){ skipped++; continue; }
+    const grade = str(r, table.grade).toUpperCase();
+    if(!grade && isNaN(ave)){ skipped++; continue; } // label rows like "Marks"
+    if(!grade) noGrade++;
     const parsed = parseBracketed(name);
     if(!parsed.fullName){ skipped++; continue; }
     pushStudent(parsed.fullName, parsed.nickname, grade, isNaN(ave) ? 0 : Math.round(ave), '', '', '', '');
     added++;
   }
+  if(noGrade) alert(`${noGrade} student${noGrade !== 1 ? 's have' : ' has'} no grade in the ${importPeriod} table — set ${noGrade !== 1 ? 'them' : 'it'} in the roster.`);
   return [added, skipped];
 }
 
