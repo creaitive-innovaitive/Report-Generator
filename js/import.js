@@ -371,6 +371,9 @@ function dataSheetsOf(wb){
 }
 
 // Period chosen on the Students tab before uploading; picks which table on the Average Grade tab to read.
+// Rows that are table labels, not students
+const LABEL_ROW = /^(marks?|question|max(imum)?|total|unit\s*\d+|average|ave|grade)$/i;
+
 let importPeriod = null;
 const PERIOD_PATTERNS = {
   'Term 1':     /term\s*1\b/i,
@@ -442,7 +445,7 @@ function _importAverageGrade(wb, sheetName){
     if(!name) continue;
     const ave = parseFloat(rows[r][table.ave]);
     const grade = str(r, table.grade).toUpperCase();
-    if(!grade && isNaN(ave)){ skipped++; continue; } // label rows like "Marks"
+    if(!grade && isNaN(ave) && LABEL_ROW.test(name)){ skipped++; continue; } // label rows like "Marks"
     if(!grade) noGrade++;
     const parsed = parseBracketed(name);
     if(!parsed.fullName){ skipped++; continue; }
