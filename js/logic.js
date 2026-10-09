@@ -105,10 +105,35 @@ function resolveParts(s, sel, bank){
   return { t, dn, sn, g, isAuto, s2cat, p1, p2, p3, i2, i3, names, r };
 }
 
+const COMMENT_MAX = 350;
+
+// Hard cap: drop trailing sentences until it fits; if even the first is too long, cut at a word boundary.
+function capComment(text){
+  if(text.length <= COMMENT_MAX) return text;
+  const sentences = text.match(/[^.!?]+[.!?]+(?:\s+|$)|[^.!?]+$/g) || [text];
+  let out = '';
+  for(const sent of sentences){
+    if((out + sent).trim().length > COMMENT_MAX) break;
+    out += sent;
+  }
+  if(out.trim()) return out.trim();
+  const cut = text.slice(0, COMMENT_MAX - 1).replace(/\s+\S*$/, '').replace(/[,;:\s]+$/, '');
+  return cut + '.';
+}
+
 // subject: optional, so saved reports render with their own subject's bank
 function assembleFull(s, sel, subject){
+  if(sel.mode === 'manual' && sel.custom) return sel.custom; // hand-edited text wins; capped only on export
+  return capComment(_assembleGenerated(s, sel, subject));
+}
+
+// What goes into downloads/clipboard: never over the cap, even for hand-edited text.
+function assembleExport(s, sel, subject){
+  return capComment(assembleFull(s, sel, subject));
+}
+
+function _assembleGenerated(s, sel, subject){
   const bank = subject ? bankFor(subject) : currentBank();
-  if(sel.mode === 'manual' && sel.custom) return sel.custom; // hand-edited text wins
   const { t, dn, sn, g, isAuto, p1, p2, p3, names, r } = resolveParts(s, sel, bank);
   let comment = `${p1} ${p2} ${p3}`;
 
@@ -123,7 +148,7 @@ function assembleFull(s, sel, subject){
     }
   } else if(sel.s4 >= 0 && !isAuto && bank[t].s4[sel.s4]){
     const s4txt = renderTmpl(bank[t].s4[sel.s4], dn, sn, g);
-    if(comment.length + 1 + s4txt.length <= 355) comment = `${comment} ${s4txt}`;
+    if(comment.length + 1 + s4txt.length <= COMMENT_MAX) comment = `${comment} ${s4txt}`;
   }
 
   return comment;

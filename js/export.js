@@ -18,7 +18,7 @@ function copyOne(id){
   if(!checkGenders(id)) return;
   const s = students.find(x => x.id === id);
   const sel = selections[id] || { mode: 'auto', s1: 0, s2cat: 's2_academic', s2: 0, s3: 0, s4: -1 };
-  navigator.clipboard.writeText(assembleFull(s, sel)).then(() => {
+  navigator.clipboard.writeText(assembleExport(s, sel)).then(() => {
     document.querySelectorAll(`button[onclick="copyOne(${id})"]`).forEach(btn => {
       const o = btn.textContent; btn.textContent = '✅ Copied!';
       setTimeout(() => btn.textContent = o, 1500);
@@ -30,7 +30,7 @@ function copyAll(){
   if(!checkGenders()) return;
   const txt = students.map(s => {
     const sel = selections[s.id] || { mode: 'auto', s1: 0, s2cat: 's2_academic', s2: 0, s3: 0, s4: -1 };
-    return `${displayName(s)} (${s.grade})\n${assembleFull(s, sel)}`;
+    return `${displayName(s)} (${s.grade})\n${assembleExport(s, sel)}`;
   }).join('\n\n');
   navigator.clipboard.writeText(txt).then(() => alert('All comments copied!'));
 }
@@ -53,7 +53,7 @@ function _buildExportRows(){
       s.fullName, s.nickname,
       s.gender === 'M' ? 'Male' : s.gender === 'F' ? 'Female' : '',
       s.grade, s.percent || '', s.progress, s.effort, s.behaviour,
-      assembleFull(s, sel)
+      assembleExport(s, sel)
     ]);
   });
   return rows;
@@ -115,7 +115,7 @@ function wordEntries(list, sels, subject){
     return {
       name: displayName(s),
       meta: [s.grade, s.percent ? s.percent + '%' : ''].filter(Boolean).join(' · '),
-      comment: assembleFull(s, sel, subject)
+      comment: assembleExport(s, sel, subject)
     };
   });
 }
