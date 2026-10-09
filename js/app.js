@@ -12,14 +12,24 @@ function ensureSel(id){
   if(!selections[id]) selections[id] = { mode: 'auto', s1: 0, s2cat: 's2_academic', s2: 0, s3: 0, s4: -1 };
 }
 
+// Auto picks S2/S3 on the fly; pin those picks before leaving auto so manual shows the same text.
+function freezeAuto(id){
+  const s = students.find(x => x.id === id);
+  const sel = selections[id];
+  if(!s || sel.mode !== 'auto') return;
+  const p = resolveParts(s, sel, currentBank());
+  sel.s2cat = p.s2cat; sel.s2 = p.i2; sel.s3 = p.i3;
+}
+
 function setMode(id, mode){
   ensureSel(id);
+  if(mode === 'manual') freezeAuto(id);
   selections[id].mode = mode;
   saveState(); renderComments(); renderExport();
 }
 
 function setAllMode(mode){
-  students.forEach(s => { ensureSel(s.id); selections[s.id].mode = mode; });
+  students.forEach(s => { ensureSel(s.id); if(mode === 'manual') freezeAuto(s.id); selections[s.id].mode = mode; });
   saveState(); renderComments(); renderExport();
 }
 
