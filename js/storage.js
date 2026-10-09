@@ -92,3 +92,46 @@ function loadSavedReportToWorkspace(id){
   renderAll();
   document.querySelectorAll('.tab-btn')[0].click();
 }
+
+
+// ── Backup / restore ──────────────────────────────────────────────────────────
+// One JSON file holds every class and every saved report, so data can move between browsers.
+
+function exportBackup(){
+  saveState();
+  const data = { app: 'report-generator', version: 1, exportedAt: new Date().toISOString(), activeClass, classes, reports: getSavedReports() };
+  const a = Object.assign(document.createElement('a'), {
+    href: URL.createObjectURL(new Blob([JSON.stringify(data)], { type: 'application/json' })),
+    download: `Report Generator Backup ${new Date().toISOString().slice(0, 10)}.json`
+  });
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 10000);
+}
+
+function importBackup(e){
+  const file = e.target.files[0]; if(!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    try {
+      const d = JSON.parse(ev.target.result);
+      if(d.app !== 'report-generator' || !Array.isArray(d.classes) || d.classes.length !== CLASS_COUNT) throw new Error('bad file');
+      const nStud = d.classes.reduce((n, c) => n + c.students.length, 0);
+      if(!confirm(`Restore this backup?\n\n${nStud} students across ${d.classes.length} classes and ${(d.reports || []).length} saved reports.\n\nYour current classes will be replaced. Saved reports are merged (nothing is deleted).`)) return;
+      classes = d.classes;
+      activeClass = d.activeClass || 0;
+      students = classes[activeClass].students;
+      selections = classes[activeClass].selections;
+      nextId = students.length ? Math.max(...students.map(x => x.id)) + 1 : 1;
+      const have = new Set(getSavedReports().map(r => r.id));
+      const merged = getSavedReports().concat((d.reports || []).filter(r => !have.has(r.id)))
+        .sort((a, b) => String(b.savedAt).localeCompare(String(a.savedAt)));
+      localStorage.setItem(REPORTS_KEY, JSON.stringify(merged));
+      saveState(); renderAll(); renderPastReports();
+      alert('Backup restored.');
+    } catch(err){
+      alert('That is not a valid Report Generator backup file.');
+    }
+  };
+  reader.readAsText(file);
+  e.target.value = '';
+}

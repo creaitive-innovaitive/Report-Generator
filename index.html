@@ -30,6 +30,8 @@
     <div id="roster-label" class="roster-label">Current Roster</div>
     <button class="btn btn-new-roster" onclick="newRoster()">+ New Roster</button>
     <button class="btn btn-new-roster" onclick="archiveAndStartNext()">📦 Archive &amp; Start Next</button>
+    <button class="btn btn-new-roster" style="margin-left:auto" onclick="exportBackup()" title="Save all classes and reports to a file">⬇ Backup</button>
+    <label class="btn btn-new-roster" style="cursor:pointer" title="Restore from a backup file">⬆ Restore<input type="file" accept=".json,application/json" style="display:none" onchange="importBackup(event)"/></label>
   </div>
 
   <div class="card">

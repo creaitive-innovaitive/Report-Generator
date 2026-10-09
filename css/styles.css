@@ -112,7 +112,7 @@ select.s-sel{font-size:.78rem;width:100%}
 .gs-row{display:flex;align-items:center;gap:.6rem;margin-top:1rem;flex-wrap:wrap}
 .gs-label{font-size:.8rem;color:var(--muted);white-space:nowrap}
 .gs-row input{flex:1;min-width:220px;font-size:.82rem}
-.roster-toolbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem}
+.roster-toolbar{display:flex;justify-content:flex-start;align-items:center;gap:.5rem;flex-wrap:wrap;margin-bottom:1rem}.roster-toolbar .roster-label{margin-right:auto}
 .roster-label{font-size:1rem;font-weight:700;color:var(--text)}
 .btn-new-roster{background:#fff;border:2px solid var(--primary);color:var(--primary);font-weight:700;padding:.42rem 1rem;border-radius:6px;cursor:pointer;font-size:.875rem;transition:all .15s}
 .btn-new-roster:hover{background:var(--primary);color:#fff}
